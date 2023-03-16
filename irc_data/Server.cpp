@@ -3,7 +3,6 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include "../helper_files/badFixHeader.hpp"
-#include "../helper_files/messageReplies.hpp"
 
 Server::Server(int port, const std::string &password) : serv_addr(), pollFd() {
 	this->password = password;
