@@ -12,7 +12,7 @@ public:
 	}
 
 	void insert(int key, T* value) { this->root = insertHelper(this->root, key, value); }
-	bool remove(int key) { return removeHelper(this->root, key); }
+	bool remove(int key) { return removeHelper(NULL, this->root, key); }
 	Node<T>* getNode(int key) const { return getNodeHelper(this->root, key); }
 	bool contains(int key) const { return getNodeHelper(this->root, key) != NULL; }
 private:
@@ -32,35 +32,37 @@ private:
 		return node;
 	}
 
-	bool removeHelper(Node<T>* node, int key) {
+	void setNodeHelper(Node<T>* parent, Node<T>* node, Node<T>* set) {
+		if (parent != NULL && parent->getRight() == node)
+			parent->setRight(set);
+		else if (parent != NULL && parent->getLeft() == node)
+			parent->setLeft(set);
+		else
+			this->root = set;
+	}
+
+	bool removeHelper(Node<T>* parent, Node<T>* node, int key) {
 		if (node == NULL)
 			return false;
 		if (key < node->getKey())
-			return removeHelper(node->getLeft(), key);
+			return removeHelper(node, node->getLeft(), key);
 		if (key > node->getKey())
-			return removeHelper(node->getRight(), key);
+			return removeHelper(node, node->getRight(), key);
 
 		if (node->getLeft() == NULL && node->getRight() == NULL) {
+			setNodeHelper(parent, node, NULL);
 			delete node;
-			node = NULL;
 		} else if (node->getLeft() == NULL) {
-			Node<T>* temp = node;
-			node = node->getRight();
-			delete temp;
+			setNodeHelper(parent, node, node->getRight());
+			delete node;
 		} else if (node->getRight() == NULL) {
-			Node<T>* temp = node;
-			node = node->getLeft();
-			delete temp;
-		} else {
+			setNodeHelper(parent, node, node->getLeft());
+			delete node;
+		} else { //TODO figure out how this works
 			Node<T>* minNode = findMin(node->getRight());
-			if (minNode == NULL) {
-				cout << "HELP NULL NODE"<< endl;
-				//TODO REMOVE THIS
-				return false;
-			}
 			node->setKey(minNode->getKey());
 			node->setValue(minNode->getValue());
-			removeHelper(node->getRight(), minNode->getKey());
+			removeHelper(node, node->getRight(), minNode->getKey());
 		}
 		return true;
 	}
