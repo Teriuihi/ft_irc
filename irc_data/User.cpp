@@ -31,3 +31,19 @@ const string &User::getRealName() const {
 void User::setRealName(const string &realName) {
 	User::realName = realName;
 }
+
+const string &User::getHostname() const {
+	return hostname;
+}
+
+void User::setHostname(const string &hostname) {
+	User::hostname = hostname;
+}
+
+const string &User::getServername() const {
+	return servername;
+}
+
+void User::setServername(const string &servername) {
+	User::servername = servername;
+}

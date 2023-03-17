@@ -10,6 +10,8 @@ private:
 	string nick;
 	string username;
 	string realName;
+	string hostname;
+	string servername;
 	bool authed;
 public:
 	void setNick(string &nick);
@@ -18,6 +20,14 @@ public:
 	const string &getRealName() const;
 	void setRealName(const string &realName);
 	const string &getNick() const;
+
+	const string &getHostname() const;
+
+	void setHostname(const string &hostname);
+
+	const string &getServername() const;
+
+	void setServername(const string &servername);
 
 	User(int fd, bool authed) : fd(fd), authed(authed) {}
 	int getFd() const;

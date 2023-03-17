@@ -9,7 +9,7 @@ string UserCommand::getName() const {
 //const string RPL_CREATED = ":irc.example.com 001 <nick> This server was created 16/03/2023";
 //const string RPL_MYINFO = ":irc.example.com 001 <nick> <servername> <version> <available user modes> <available channel modes>";
 
-//received message is username status_bit_mask star? :real name
+//received message is username hostname servername :real name
 void UserCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL || !user->isAuthed())
@@ -20,6 +20,8 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 		return;
 	}
 	user->setUsername(commandParts[0]);
+	user->setHostname(commandParts[1]);
+	user->setServername(commandParts[2]);
 	size_t pos = command.find(commandParts[3]);
 	if (pos != std::string::npos) {
 		user->setRealName(command.substr(pos));
@@ -30,7 +32,7 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 	Template welcome = Template(ReplyMessages::RPL_WELCOME);
 	Placeholder nickP = Placeholder("nick", user->getNick());
 	Placeholder userP = Placeholder("user", user->getUsername());
-	Placeholder hostP = Placeholder("host", "localhost"); //TODO fix
+	Placeholder hostP = Placeholder("host", user->getHostname());
 	welcome.addPlaceholders(nickP);
 	welcome.addPlaceholders(userP);
 	welcome.addPlaceholders(hostP);
