@@ -76,6 +76,8 @@ void Server::forwardMessage(char *message) {
 void Server::executeCommand(std::vector<std::string> commands, int fd) {
 	for (std::vector<std::string>::size_type i = 0; i < commands.size(); i++) {
 		string fullCommand = commands[i];
+		if (*--fullCommand.end() == '\r')
+			fullCommand = fullCommand.substr(0, fullCommand.length() - 1);
 		size_t pos = fullCommand.find(' ');
 		if (pos == std::string::npos) {
 			return;
@@ -95,15 +97,18 @@ std::vector<std::string> splitString(const std::string& str, const std::string &
 
 void Server::receivedMessage(char *message, int fd) {
 	string msg(message);
-	msg = msg.substr(0, msg.length() - 2);
+	if (*--msg.end() != '\n') {
+		cout << "Received incomplete message" << endl;
+	}
+	msg = msg.substr(0, msg.length() - 1);
 	size_t pos = msg.find(']');
 	if (pos != std::string::npos && pos + 2 >= msg.length()) {
-		cout << "received message seems too short, message was: {" << msg << "}" << endl;
+		cout << "Received message seems too short, message was: {" << msg << "}" << endl;
 		return;
 	}
 	pos += 2;
 	string fullCommand = msg.substr(pos, msg.length());
-	std::vector<std::string> commands = splitString(fullCommand, "\r\n");
+	std::vector<std::string> commands = splitString(fullCommand, "\n");
 	executeCommand(commands, fd);
 //	string reply = "";
 //	if (fullCommand.find("USER ") == 0) {
