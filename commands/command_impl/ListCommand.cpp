@@ -4,7 +4,7 @@ string ListCommand::getName() const {
 	return "LIST";
 }
 
-void ListCommand::execute(Server &server, string &command, int fd) {
+void ListCommand::execute(Server &server, string &command, int fd) {\
 	User *user = server.getUser(fd);
 	if (user == NULL || !user->isAuthed()) {
 		//TODO ERROR
@@ -27,4 +27,5 @@ void ListCommand::execute(Server &server, string &command, int fd) {
 	listEndT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 	string listEndM = listEndT.getString();
 	send(fd, listEndM.c_str(), listEndM.size(), 0);
+	command.size(); //This param is unused but that's not allowed by the subject but it needs to be
 }
