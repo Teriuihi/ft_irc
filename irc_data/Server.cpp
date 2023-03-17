@@ -100,16 +100,19 @@ void Server::executeCommand(std::vector<std::string> commands, int fd) {
 			fullCommand = fullCommand.substr(0, fullCommand.length() - 1);
 		size_t pos = fullCommand.find(' ');
 		if (pos == std::string::npos) {
+			cout << "received command: {" << fullCommand << "} with no content" << endl;
+			string empty;
+			((CommandHandler*) commandHandler)->execute(fullCommand, *this, empty, fd);
 			return;
 		}
-		std::string name = fullCommand.substr(0, pos);
+		std::string commandName = fullCommand.substr(0, pos);
 		if (fullCommand.length() < pos + 2) {
 			cout << "received message seems too short, no command context, message was: {" << fullCommand << "}" << endl;
 			return;
 		}
 		std::string command = fullCommand.substr(pos + 1);
-		cout << "received command: {" << name << "} with content {" << command << "}" << endl;
-		((CommandHandler*) commandHandler)->execute(name, *this, command, fd);
+		cout << "received command: {" << commandName << "} with content {" << command << "}" << endl;
+		((CommandHandler*) commandHandler)->execute(commandName, *this, command, fd);
 	}
 }
 
@@ -128,6 +131,7 @@ void Server::receivedMessage(char *message, int fd) {
 	}
 	pos += 2;
 	string fullCommand = msg.substr(pos, msg.length());
+	cout << fullCommand << endl;
 	std::vector<std::string> commands = splitString(fullCommand, "\n");
 	executeCommand(commands, fd);
 }
