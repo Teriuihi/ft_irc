@@ -5,8 +5,6 @@ string JoinCommand::getName() const {
 }
 
 void JoinCommand::execute(Server &server, string &command, int fd) { //TODO handle joining multiple channels in one command
-	string notconst = "<nick>!<username>@<hostname> JOIN <channel>\n"; //TODO move to constants
-	string notconst2 = ":<nick>!<username>@<hostname> JOIN <channel>\n";
 	User *user = server.getUser(fd);
 	if (user == NULL || !user->isAuthed()) {
 		//TODO ERROR
@@ -22,21 +20,35 @@ void JoinCommand::execute(Server &server, string &command, int fd) { //TODO hand
 		return;
 	}
 	channel->addUser(user->getFd(), user);
+
 	Placeholder nickP = Placeholder("nick", user->getNick());
 	Placeholder usernameP = Placeholder("username", user->getUsername());
 	Placeholder channelP = Placeholder("channel", channel->getName());
-	Placeholder hostnameP = Placeholder("hostname", "localhost"); //TODO localhost might need to change
-	Template plt = Template(notconst);
-	Template plt2 = Template(notconst2);
-	plt.addPlaceholders(nickP);
-	plt.addPlaceholders(usernameP);
-	plt.addPlaceholders(channelP);
-	plt.addPlaceholders(hostnameP);
-	plt2.addPlaceholders(nickP);
-	plt2.addPlaceholders(usernameP);
-	plt2.addPlaceholders(channelP);
-	plt2.addPlaceholders(hostnameP);
-	string reply = plt.getString();
-	send(fd, reply.c_str(), reply.length(), 0);
-	channel->sendMessage(user, plt2.getString());
+	Placeholder hostnameP = Placeholder("hostname", user->getHostname());
+	Placeholder topicP = Placeholder("topic", channel->getTopic());
+	Placeholder userListP = Placeholder("user_list", channel->getUserList());
+
+	Template joinT = Template(ReplyMessages::JOIN);
+	joinT.addPlaceholders(nickP);
+	joinT.addPlaceholders(usernameP);
+	joinT.addPlaceholders(channelP);
+	joinT.addPlaceholders(hostnameP);
+	channel->sendMessage(user, joinT.getString());
+
+	Template topicT = Template(ReplyMessages::RPL_TOPIC);
+	topicT.addPlaceholders(channelP);
+	topicT.addPlaceholders(topicP);
+	string topicReply = topicT.getString();
+	send(fd, topicReply.c_str(), topicReply.length(), 0);
+
+	Template nameT = Template(ReplyMessages::RPL_NAMREPLY);
+	nameT.addPlaceholders(channelP);
+	nameT.addPlaceholders(userListP);
+	string userListReply = nameT.getString();
+	send(fd, userListReply.c_str(), userListReply.length(), 0);
+
+	Template nameEndT = Template(ReplyMessages::RPL_ENDOFNAMES);
+	nameEndT.addPlaceholders(channelP);
+	string userListEndReply = nameEndT.getString();
+	send(fd, userListEndReply.c_str(), userListEndReply.length(), 0);
 }
