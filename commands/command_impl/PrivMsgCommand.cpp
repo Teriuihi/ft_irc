@@ -25,8 +25,11 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 	}
 	string textToSend = command.substr(pos);
 	if (*target.begin() == '#') {
-		try {
-			Channel *channel = server.getChannel(target);
+		Channel *channel = server.getChannel(target);
+		if (channel == NULL) {
+			cout << "No channel with that name found" << endl;
+			//TODO send err msg
+		} else {
 			if (channel->getUser(fd) == NULL) {
 				//TODO error not in channel ?
 				return;
@@ -34,11 +37,7 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 			//TODO localhost might need to change
 			string modifiedMsg = ":" + user->getNick() + "!" + user->getUsername() + "@" + "localhost PRIVMSG " + channel->getName() + " :" + textToSend + "\n";
 			channel->sendMessage(user, modifiedMsg);
-		} catch (std::exception &e) {
-			cout << e.what() << endl;
-			//TODO send err msg
 		}
-		//TODO send to channel
 	} else if (*target.begin() == '$') {
 		//TODO unknown? maybe this shouldn't be implemented?
 	} else {

@@ -13,5 +13,7 @@ public:
 	void addUser(int fd, User *user);
 	const string &getName() const;
 	void sendMessage(User *sender, const string& text);
+
+	void removeUser(int fd);
 };
 #endif

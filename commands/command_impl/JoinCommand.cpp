@@ -12,10 +12,8 @@ void JoinCommand::execute(Server &server, string &command, int fd) { //TODO hand
 		//TODO ERROR
 		return;
 	}
-	Channel *channel;
-	try {
-		channel = server.getChannel(command);
-	} catch (std::exception &e) {
+	Channel *channel = server.getChannel(command);
+	if (channel == NULL) {
 		Template plt = Template(ErrorMessages::ERR_BADCHANNELKEY);
 		Placeholder channelP = Placeholder("channel", command);
 		plt.addPlaceholders(channelP);
