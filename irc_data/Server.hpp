@@ -32,6 +32,8 @@ public:
 	void closeServer() const;
 	Channel* getChannel(const string& name);
 
+	vector<Channel *> getAllChannelsForUser(int fd);
+
 private:
 	int sockFd;
 	std::string password;
@@ -41,6 +43,7 @@ private:
 	BSTree<User> activeUsers;
 	void *commandHandler;
 	void executeCommand(vector<string> commands, int fd);
+
 };
 
 

@@ -63,7 +63,17 @@ Channel *Server::getChannel(const string& name) {
 			return *it;
 		}
 	}
-	throw out_of_range("No channel with that name in this vector");
+	return NULL;
+}
+
+std::vector<Channel*> Server::getAllChannelsForUser(int fd) {
+	std::vector<Channel*> resultChannels;
+	for (vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); ++it) {
+		if ((*it)->getUser(fd) != NULL) {
+			resultChannels.push_back(*it);
+		}
+	}
+	return resultChannels;
 }
 
 void Server::forwardMessage(char *message) {
@@ -110,16 +120,4 @@ void Server::receivedMessage(char *message, int fd) {
 	string fullCommand = msg.substr(pos, msg.length());
 	std::vector<std::string> commands = splitString(fullCommand, "\n");
 	executeCommand(commands, fd);
-//	string reply = "";
-//	if (fullCommand.find("USER ") == 0) {
-//		reply = ":irc.example.com 001 Teri :Welcome to the ft_irc server Teri!\n";
-//		//TODO set user
-//	} else if (fullCommand.find("JOIN ") == 0) {
-//		reply = replyJoin(*this, message, user);
-//	} else if (fullCommand.find("PING ") == 0) {
-//		reply = "PONG" + fullCommand.substr(4);
-//	}
-//
-//	if (reply.length() > 0)
-//		send(fd, reply.c_str(), reply.length(), 0);
 }
