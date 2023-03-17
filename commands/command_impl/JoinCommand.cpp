@@ -34,7 +34,9 @@ void JoinCommand::execute(Server &server, string &command, int fd) { //TODO hand
 	joinT.addPlaceholders(usernameP);
 	joinT.addPlaceholders(channelP);
 	joinT.addPlaceholders(hostnameP);
+	string joinR = joinT.getString();
 	channel->sendMessage(user, joinT.getString());
+	send(fd, joinR.c_str(), joinR.length(), 0);
 
 	Template topicT = Template(ReplyMessages::RPL_TOPIC);
 	topicT.addPlaceholders(serverHostP);
