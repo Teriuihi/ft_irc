@@ -49,7 +49,7 @@ std::string Channel::getUserList() {
 		if (!userList.empty())
 			userList += " ";
 		User* user = it->second;
-		userList += user->getUsername();
+		userList += "+" + user->getUsername();
 	}
 	return userList;
 }
