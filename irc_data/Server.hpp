@@ -32,7 +32,7 @@ public:
 	void closeServer() const;
 	Channel* getChannel(const string& name);
 	vector<Channel *> getAllChannelsForUser(int fd);
-
+	const string &getName() const;
 	const string &getHostname() const;
 
 private:
@@ -45,6 +45,7 @@ private:
 	void *commandHandler;
 	void executeCommand(vector<string> commands, int fd);
 	std::string hostname;
+	std::string name;
 };
 
 

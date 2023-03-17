@@ -7,6 +7,7 @@
 Server::Server(int port, const std::string &password) : serv_addr(), pollFd() {
 	this->password = password;
 	this->commandHandler = new CommandHandler();
+	this->name = "ft_irc";
 	char tmpHostname[256];
 	if (gethostname(tmpHostname, sizeof(tmpHostname)) == 0) {
 		this->hostname = tmpHostname;
@@ -131,4 +132,8 @@ void Server::receivedMessage(char *message, int fd) {
 
 const string &Server::getHostname() const {
 	return hostname;
+}
+
+const string &Server::getName() const {
+	return name;
 }
