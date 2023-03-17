@@ -6,16 +6,11 @@
 #include "command_impl/PasswordCommand.hpp"
 #include "command_impl/NickCommand.hpp"
 #include "command_impl/PrivMsgCommand.hpp"
+#include "command_impl/ModeCommand.hpp"
+#include "command_impl/PartCommand.hpp"
+#include "command_impl/QuitCommand.hpp"
 
 CommandHandler::CommandHandler() {
-	//TODO add PRIVMSG
-	//	received command: {PRIVMSG} with content {#example :cool}
-	//TODO add PART
-	//	received command: {PART} with content {#example :Closing Window}
-	//TODO do I need to add MODE?
-	//	received command: {MODE} with content {#example}
-	//TODO add QUIT
-	//	received command: {QUIT} with content {:Going offline, see ya! (www.adiirc.com)}
 	this->commands.insert(std::make_pair("PASS", new PasswordCommand()));
 	this->commands.insert(std::make_pair("USER", new UserCommand()));
 	this->commands.insert(std::make_pair("UNKNOWN", new UnknownCommand()));
@@ -23,6 +18,9 @@ CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("PING", new PingCommand()));
 	this->commands.insert(std::make_pair("NICK", new NickCommand()));
 	this->commands.insert(std::make_pair("PRIVMSG", new PrivMsgCommand()));
+	this->commands.insert(std::make_pair("MODE", new ModeCommand()));
+	this->commands.insert(std::make_pair("PART", new PartCommand()));
+	this->commands.insert(std::make_pair("QUIT", new QuitCommand()));
 }
 
 void CommandHandler::execute(string &name, Server &server, string &command, int fd) {
