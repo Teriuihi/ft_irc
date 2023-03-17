@@ -26,6 +26,15 @@ public:
 		return node->getValue();
 	}
 
+	User* getUser(const string& searchNick) {
+		vector<User*> users = activeUsers.getAll();
+		for (vector<User*>::const_iterator it = users.begin(); it != users.end(); ++it) {
+			if ((*it)->getNick() == searchNick)
+				return *it;
+		}
+		return NULL;
+	}
+
 	std::string getPassword() { return password; }
 	void forwardMessage(char *message);
 	void receivedMessage(char *message, int fd);

@@ -6,17 +6,37 @@
 template <typename T>
 class BSTree {
 public:
-	BSTree() : root(NULL) {}
+	BSTree() : root(NULL), listUpToDate(false) {}
 	~BSTree() {
 		deleteTree(root);
 	}
 
-	void insert(int key, T* value) { this->root = insertHelper(this->root, key, value); }
-	bool remove(int key) { return removeHelper(NULL, this->root, key); }
+	void insert(int key, T* value) {
+		listUpToDate = false;
+		this->root = insertHelper(this->root, key, value);
+	}
+
+	bool remove(int key) {
+		listUpToDate = false;
+		return removeHelper(NULL, this->root, key);
+	}
+
 	Node<T>* getNode(int key) const { return getNodeHelper(this->root, key); }
 	bool contains(int key) const { return getNodeHelper(this->root, key) != NULL; }
+
+	vector<T*> getAll() {
+		if (listUpToDate)
+			return allValues;
+		allValues.clear();
+		getAllHelper(root, allValues);
+		listUpToDate = true;
+		return allValues;
+	}
+
 private:
 	Node<T>* root;
+	bool listUpToDate;
+	vector<T*> allValues;
 
 	Node<T>* insertHelper(Node<T>* node, int key, T* value) {
 		if (node == NULL) {
@@ -30,6 +50,14 @@ private:
 			node->setValue(value);
 		}
 		return node;
+	}
+
+	void getAllHelper(Node<T>* node, vector<T*>& result) {
+		if (node == NULL)
+			return;
+		getAllHelper(node->getLeft(), result);
+		result.push_back(node->getValue());
+		getAllHelper(node->getRight(), result);
 	}
 
 	void setNodeHelper(Node<T>* parent, Node<T>* node, Node<T>* set) {
