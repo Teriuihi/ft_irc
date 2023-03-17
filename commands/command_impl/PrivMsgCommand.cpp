@@ -36,7 +36,7 @@ void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &ta
 	channel->sendMessage(user, modifiedMsg);
 }
 
-void PrivMsgCommand::sendUserMessage(Server &server, string const &target, Template &channelMessageT, User *user) {
+void PrivMsgCommand::sendUserMessage(Server &server, string const &target, Template &channelMessageT) {
 	User *recipient = server.getUser(target);
 	if (recipient == NULL) {
 		cout << "No user with that name found" << endl;
@@ -85,7 +85,7 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 		if (*it->begin() == '#') {
 			sendChannelMessage(server, fd, *it, messageT, user);
 		} else {
-			sendUserMessage(server, *it, messageT, user);
+			sendUserMessage(server, *it, messageT);
 			//We ignore $ and #ip because it's not required by the subject
 		}
 	}
