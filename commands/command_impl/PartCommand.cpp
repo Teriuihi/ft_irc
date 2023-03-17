@@ -23,7 +23,7 @@ void PartCommand::execute(Server &server, string &command, int fd) {
 	Template plt = Template(notconst);
 	plt.addPlaceholders(Placeholder("nick", user->getNick()));
 	plt.addPlaceholders(Placeholder("username", user->getUsername()));
-	plt.addPlaceholders(Placeholder("hostname", "localhost")); //TODO get user host name
+	plt.addPlaceholders(Placeholder("hostname", user->getHostname()));
 	plt.addPlaceholders(Placeholder("channel", channel->getName()));
 	plt.addPlaceholders(Placeholder("reason", command));
 	std::string reply = plt.getString();

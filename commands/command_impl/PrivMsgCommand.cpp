@@ -23,6 +23,7 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 		//TODO ERR_NOTEXTTOSEND
 		return;
 	}
+	//TODO fix this text still including channel tag
 	string textToSend = command.substr(pos);
 	if (*target.begin() == '#') {
 		Channel *channel = server.getChannel(target);
@@ -34,8 +35,7 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 				//TODO error not in channel ?
 				return;
 			}
-			//TODO localhost might need to change
-			string modifiedMsg = ":" + user->getNick() + "!" + user->getUsername() + "@" + "localhost PRIVMSG " + channel->getName() + " :" + textToSend + "\n";
+			string modifiedMsg = ":" + user->getNick() + "!" + user->getUsername() + "@" + user->getHostname() + " PRIVMSG " + channel->getName() + " :" + textToSend + "\n";
 			channel->sendMessage(user, modifiedMsg);
 		}
 	} else if (*target.begin() == '$') {
