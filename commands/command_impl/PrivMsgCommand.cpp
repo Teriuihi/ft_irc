@@ -24,8 +24,8 @@ void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &ta
 	Channel *channel = server.getChannel(target);
 	if (channel == NULL) {
 		cout << "No channel with that name found" << endl;
-		return;
 		//TODO send err msg
+		return;
 	}
 	if (channel->getUser(fd) == NULL) {
 		//TODO error not in channel ?
@@ -34,6 +34,18 @@ void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &ta
 	channelMessageT.addPlaceholders(Placeholder("channel", channel->getName()));
 	string modifiedMsg = channelMessageT.getString();
 	channel->sendMessage(user, modifiedMsg);
+}
+
+void PrivMsgCommand::sendUserMessage(Server &server, string const &target, Template &channelMessageT, User *user) {
+	User *recipient = server.getUser(target);
+	if (recipient == NULL) {
+		cout << "No user with that name found" << endl;
+		//TODO send err msg
+		return;
+	}
+	channelMessageT.addPlaceholders(Placeholder("channel", recipient->getNick()));
+	string modifiedMsg = channelMessageT.getString();
+	send(recipient->getFd(), modifiedMsg.c_str(), modifiedMsg.length(), 0);
 }
 
 void PrivMsgCommand::execute(Server &server, string &command, int fd) {
@@ -61,20 +73,20 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 	Placeholder hostP = Placeholder("host", user->getHostname());
 	Placeholder messageP = Placeholder("message", textToSend);
 
-	Template channelMessageT = Template(ReplyMessages::PRIVMSG);
-	channelMessageT.addPlaceholders(nickP);
-	channelMessageT.addPlaceholders(userP);
-	channelMessageT.addPlaceholders(hostP);
-	channelMessageT.addPlaceholders(messageP);
+	Template messageT = Template(ReplyMessages::PRIVMSG);
+	messageT.addPlaceholders(nickP);
+	messageT.addPlaceholders(userP);
+	messageT.addPlaceholders(hostP);
+	messageT.addPlaceholders(messageP);
 
 	for (vector<string>::const_iterator it = commandParts.begin(); it != commandParts.end(); it++) {
 		if (*it->begin() == ':')
 			break;
 		if (*it->begin() == '#') {
-			sendChannelMessage(server, fd, *it, channelMessageT, user);
+			sendChannelMessage(server, fd, *it, messageT, user);
 		} else {
-			//TODO handle dm'ing user?
-			//	Are we ignoring $?
+			sendUserMessage(server, *it, messageT, user);
+			//We ignore $ and #ip because it's not required by the subject
 		}
 	}
 }
