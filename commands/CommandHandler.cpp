@@ -9,6 +9,7 @@
 #include "command_impl/ModeCommand.hpp"
 #include "command_impl/PartCommand.hpp"
 #include "command_impl/QuitCommand.hpp"
+#include "command_impl/ListCommand.hpp"
 
 CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("PASS", new PasswordCommand()));
@@ -21,6 +22,7 @@ CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("MODE", new ModeCommand()));
 	this->commands.insert(std::make_pair("PART", new PartCommand()));
 	this->commands.insert(std::make_pair("QUIT", new QuitCommand()));
+	this->commands.insert(std::make_pair("LIST", new ListCommand()));
 }
 
 void CommandHandler::execute(string &name, Server &server, string &command, int fd) {

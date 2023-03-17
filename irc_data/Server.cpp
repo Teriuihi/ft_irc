@@ -48,7 +48,9 @@ Server::Server(int port, const std::string &password) : serv_addr(), pollFd() {
 		pollFd[i].fd = -1;
 	}
 
-	channels.push_back(new Channel("#example", "Test the IRC server"));
+	channels.push_back(new Channel("#test-channel", "Test the IRC server."));
+	channels.push_back(new Channel("#general", "Talk about things related to the IRC server."));
+	channels.push_back(new Channel("#off-topic", "Talk about anything you want."));
 }
 
 void Server::closeServer() const { //TODO do this in de-constructor?
@@ -136,4 +138,8 @@ const string &Server::getHostname() const {
 
 const string &Server::getName() const {
 	return name;
+}
+
+const vector<Channel *> &Server::getChannels() const {
+	return channels;
 }

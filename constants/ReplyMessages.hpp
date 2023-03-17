@@ -12,5 +12,7 @@ namespace ReplyMessages {
 	const std::string RPL_NAMREPLY = ":<server_hostname> 353 <channel> :<user_list>\n";
 	const std::string RPL_ENDOFNAMES = ":<server_hostname> 366 <channel> :End of NAMES list\n";
 	const std::string PRIVMSG =  ":<nick>!<user>@<host> PRIVMSG <channel> :<message>\n";
+	const std::string RPL_LIST =  ":<server_hostname> 322 <channel> <users> :<topic>\n";
+	const std::string RPL_LISTEND =  ":<server_hostname> 323 :End of LIST\n";
 }
 #endif

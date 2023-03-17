@@ -1,5 +1,6 @@
 #include <sys/socket.h>
 #include <vector>
+#include <sstream>
 #include "Channel.hpp"
 
 const User* Channel::getUser(int fd) const {
@@ -52,4 +53,10 @@ std::string Channel::getUserList() {
 		userList += "+" + user->getUsername();
 	}
 	return userList;
+}
+
+std::string Channel::getUserCount() {
+	std::ostringstream oStringStream;
+	oStringStream << users.size();
+	return oStringStream.str();
 }

@@ -17,7 +17,7 @@ public:
 	void removeUser(int fd);
 	const string &getTopic() const;
 	void setTopic(const string &newTopic);
-
 	std::string getUserList();
+	std::string getUserCount();
 };
 #endif

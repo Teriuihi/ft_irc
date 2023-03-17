@@ -35,6 +35,8 @@ public:
 		return NULL;
 	}
 
+	const vector<Channel *> &getChannels() const;
+
 	std::string getPassword() { return password; }
 	void forwardMessage(char *message);
 	void receivedMessage(char *message, int fd);
