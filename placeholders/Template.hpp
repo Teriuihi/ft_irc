@@ -11,6 +11,7 @@ public:
 	const std::string& getString();
 private:
 	std::string str;
+	std::string result;
 	std::vector<Placeholder> placeholders;
 };
 

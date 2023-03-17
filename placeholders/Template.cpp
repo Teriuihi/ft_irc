@@ -1,14 +1,15 @@
 #include "Template.hpp"
 
 const std::string &Template::getString() {
+	result = str;
 	for (size_t i = 0; i < placeholders.size(); i++) {
 		size_t pos = 0;
-		while ((pos = str.find(placeholders[i].getPlaceholder(), pos)) != std::string::npos) {
-			str.replace(pos, placeholders[i].getPlaceholder().length(), placeholders[i].getReplacement());
+		while ((pos = result.find(placeholders[i].getPlaceholder(), pos)) != std::string::npos) {
+			result.replace(pos, placeholders[i].getPlaceholder().length(), placeholders[i].getReplacement());
 			pos += placeholders[i].getReplacement().length();
 		}
 	}
-	return str;
+	return result;
 }
 
 void Template::addPlaceholders(const Placeholder &placeholder) {
