@@ -7,6 +7,9 @@ string PasswordCommand::getName() const {
 void PasswordCommand::execute(Server &server, string &command, int fd) {
 	if (command == server.getPassword())
 		server.addUser(fd, new User(fd, true));
-	else
+	else {
 		server.addUser(fd, new User(fd, false));
+		std::string reply = ErrorMessages::ERR_PASSWDMISMATCH;
+		send(fd, reply.c_str(), reply.length(), 0);
+	}
 }
