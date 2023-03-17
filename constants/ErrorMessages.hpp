@@ -3,6 +3,8 @@
 #include <string>
 
 namespace ErrorMessages {
-	const std::string ERR_UNKNOWN_COMMAND = "<command> :Unknown command";
+	const std::string ERR_UNKNOWN_COMMAND = "421 <command> :Unknown command\n";
+	const std::string ERR_PASSWDMISMATCH = "464 :Password incorrect\n";
+	const std::string ERR_BADCHANNELKEY = "475 <channel> :Cannot join channel (+k)\n";
 }
 #endif
