@@ -6,7 +6,7 @@ template<typename T>
 class Node {
 public:
 	Node(int key, T* value) : key(key), value(value), left(NULL), right(NULL) {}
-	int getKey() const { return key; }
+	int getKey() const { return key; } //TODO reconnect causes SIGSEGV
 	void setKey(int newKey) { key = newKey; }
 	T* getValue() const { return value; }
 	void setValue(T* newValue) { this->value = newValue; }
