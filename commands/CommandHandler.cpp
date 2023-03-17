@@ -4,6 +4,8 @@
 #include "command_impl/JoinCommand.hpp"
 #include "command_impl/PingCommand.hpp"
 #include "command_impl/PasswordCommand.hpp"
+#include "command_impl/NickCommand.hpp"
+#include "command_impl/PrivMsgCommand.hpp"
 
 CommandHandler::CommandHandler() {
 	//TODO add PRIVMSG
@@ -19,6 +21,8 @@ CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("UNKNOWN", new UnknownCommand()));
 	this->commands.insert(std::make_pair("JOIN", new JoinCommand()));
 	this->commands.insert(std::make_pair("PING", new PingCommand()));
+	this->commands.insert(std::make_pair("NICK", new NickCommand()));
+	this->commands.insert(std::make_pair("PRIVMSG", new PrivMsgCommand()));
 }
 
 void CommandHandler::execute(string &name, Server &server, string &command, int fd) {
@@ -31,7 +35,7 @@ void CommandHandler::execute(string &name, Server &server, string &command, int 
 	} else if (!std::equal(name.begin(), name.end(), "UNKNOWN")) {
 		//As an exception this gets the name + command of the executed command back to it so it can report to the client what the wrong command was
 		std::string tmp = "UNKNOWN";
-		execute(tmp, server, name.append(command), fd);
+		execute(tmp, server, name.append(" " + command), fd);
 	}
 }
 
