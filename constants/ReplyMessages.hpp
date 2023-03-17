@@ -9,6 +9,7 @@ namespace ReplyMessages {
 	const std::string RPL_MYINFO = ":<server_hostname> 004 <nick> :<servername> <version> <available user modes> <available channel modes>\n";
 	const std::string RPL_LIST =  ":<server_hostname> 322 <channel> <users> :<topic>\n";
 	const std::string RPL_LISTEND =  ":<server_hostname> 323 :End of LIST\n";
+	const std::string RPL_CHANNELMODEIS =  ":<server_hostname> 324 <channel> <mode> <mode params>\n";
 	const std::string RPL_TOPIC = ":<server_hostname> 332 <channel> :<topic>\n";
 	const std::string RPL_NAMREPLY = ":<server_hostname> 353 <channel> :<user_list>\n";
 	const std::string RPL_ENDOFNAMES = ":<server_hostname> 366 <channel> :End of NAMES list\n";

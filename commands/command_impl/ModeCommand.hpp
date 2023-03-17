@@ -6,6 +6,8 @@ class ModeCommand: public CommandInterface {
 public:
 	virtual string getName() const;
 	virtual void execute(Server &server, string &command, int fd);
+private:
+	static void respondModeChannel(Server &server, string &channelName, int fd);
 };
 
 #endif
