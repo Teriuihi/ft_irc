@@ -30,9 +30,11 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 	}
 
 	Template welcome = Template(ReplyMessages::RPL_WELCOME);
+	Placeholder serverHostP = Placeholder("server_hostname", server.getHostname());
 	Placeholder nickP = Placeholder("nick", user->getNick());
 	Placeholder userP = Placeholder("user", user->getUsername());
 	Placeholder hostP = Placeholder("host", user->getHostname());
+	welcome.addPlaceholders(serverHostP);
 	welcome.addPlaceholders(nickP);
 	welcome.addPlaceholders(userP);
 	welcome.addPlaceholders(hostP);

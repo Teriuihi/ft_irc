@@ -7,6 +7,13 @@
 Server::Server(int port, const std::string &password) : serv_addr(), pollFd() {
 	this->password = password;
 	this->commandHandler = new CommandHandler();
+	char tmpHostname[256];
+	if (gethostname(tmpHostname, sizeof(tmpHostname)) == 0) {
+		this->hostname = tmpHostname;
+	} else {
+		throw runtime_error("Error getting hostname");
+	}
+
 	sockFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockFd < 0) {
 		throw runtime_error("Error creating socket");
@@ -120,4 +127,8 @@ void Server::receivedMessage(char *message, int fd) {
 	string fullCommand = msg.substr(pos, msg.length());
 	std::vector<std::string> commands = splitString(fullCommand, "\n");
 	executeCommand(commands, fd);
+}
+
+const string &Server::getHostname() const {
+	return hostname;
 }

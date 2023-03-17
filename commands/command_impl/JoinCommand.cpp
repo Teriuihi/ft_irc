@@ -13,14 +13,15 @@ void JoinCommand::execute(Server &server, string &command, int fd) { //TODO hand
 	Channel *channel = server.getChannel(command);
 	if (channel == NULL) {
 		Template plt = Template(ErrorMessages::ERR_BADCHANNELKEY);
-		Placeholder channelP = Placeholder("channel", command);
-		plt.addPlaceholders(channelP);
+		plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		plt.addPlaceholders(Placeholder("channel", command));
 		string reply = plt.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	channel->addUser(user->getFd(), user);
 
+	Placeholder serverHostP = Placeholder("server_hostname", server.getHostname());
 	Placeholder nickP = Placeholder("nick", user->getNick());
 	Placeholder usernameP = Placeholder("username", user->getUsername());
 	Placeholder channelP = Placeholder("channel", channel->getName());
@@ -36,18 +37,21 @@ void JoinCommand::execute(Server &server, string &command, int fd) { //TODO hand
 	channel->sendMessage(user, joinT.getString());
 
 	Template topicT = Template(ReplyMessages::RPL_TOPIC);
+	topicT.addPlaceholders(serverHostP);
 	topicT.addPlaceholders(channelP);
 	topicT.addPlaceholders(topicP);
 	string topicReply = topicT.getString();
 	send(fd, topicReply.c_str(), topicReply.length(), 0);
 
 	Template nameT = Template(ReplyMessages::RPL_NAMREPLY);
+	nameT.addPlaceholders(serverHostP);
 	nameT.addPlaceholders(channelP);
 	nameT.addPlaceholders(userListP);
 	string userListReply = nameT.getString();
 	send(fd, userListReply.c_str(), userListReply.length(), 0);
 
 	Template nameEndT = Template(ReplyMessages::RPL_ENDOFNAMES);
+	nameEndT.addPlaceholders(serverHostP);
 	nameEndT.addPlaceholders(channelP);
 	string userListEndReply = nameEndT.getString();
 	send(fd, userListEndReply.c_str(), userListEndReply.length(), 0);

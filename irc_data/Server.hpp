@@ -31,8 +31,9 @@ public:
 	void receivedMessage(char *message, int fd);
 	void closeServer() const;
 	Channel* getChannel(const string& name);
-
 	vector<Channel *> getAllChannelsForUser(int fd);
+
+	const string &getHostname() const;
 
 private:
 	int sockFd;
@@ -43,7 +44,7 @@ private:
 	BSTree<User> activeUsers;
 	void *commandHandler;
 	void executeCommand(vector<string> commands, int fd);
-
+	std::string hostname;
 };
 
 
