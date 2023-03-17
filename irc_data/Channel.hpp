@@ -12,5 +12,6 @@ public:
 	const User* getUser(int fd) const;
 	void addUser(int fd, User *user);
 	const string &getName() const;
+	void sendMessage(User *sender, const string& text);
 };
 #endif
