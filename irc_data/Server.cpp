@@ -40,7 +40,7 @@ Server::Server(int port, const std::string &password) : serv_addr(), pollFd() {
 		pollFd[i].fd = -1;
 	}
 
-	channels.push_back(new Channel("#example"));
+	channels.push_back(new Channel("#example", "Test the IRC server"));
 }
 
 void Server::closeServer() const { //TODO do this in de-constructor?

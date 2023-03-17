@@ -2,10 +2,6 @@
 #include <vector>
 #include "Channel.hpp"
 
-Channel::Channel(const string &name) : name(name) {
-
-}
-
 const User* Channel::getUser(int fd) const {
 	map<int, User*>::const_iterator it = users.find(fd);
 	if (it == users.end()) {
@@ -34,4 +30,26 @@ void Channel::sendMessage(User *sender, const string& text) {
 			continue;
 		send(it->second->getFd(), textToSend, textLength, 0);
 	}
+}
+
+const string &Channel::getTopic() const {
+	return topic;
+}
+
+void Channel::setTopic(const string &newTopic) {
+	this->topic = newTopic;
+}
+
+Channel::Channel(const string &name, const string &topic) : name(name), topic(topic) {}
+
+std::string Channel::getUserList() {
+	std::string userList;
+	std::map<int, User*>::iterator it;
+	for (it = users.begin(); it != users.end(); ++it) {
+		if (!userList.empty())
+			userList += " ";
+		User* user = it->second;
+		userList += user->getUsername();
+	}
+	return userList;
 }
