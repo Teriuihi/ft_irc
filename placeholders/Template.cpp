@@ -12,5 +12,14 @@ const std::string &Template::getString() {
 }
 
 void Template::addPlaceholders(const Placeholder &placeholder) {
-	Template::placeholders.push_back(placeholder);
+	bool set = false;
+	for (size_t i = 0; i < placeholders.size(); i++) {
+		if (placeholders[i].getPlaceholder() == placeholder.getPlaceholder()) {
+			placeholders[i] = placeholder;
+			set = true;
+			break;
+		}
+	}
+	if (!set)
+		Template::placeholders.push_back(placeholder);
 }

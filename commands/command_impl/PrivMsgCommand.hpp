@@ -5,8 +5,11 @@
 class PrivMsgCommand: public CommandInterface {
 public:
 	virtual string getName() const;
-
 	virtual void execute(Server &server, string &command, int fd);
+private:
+	static void sendNoRecipientMessage(Server &server, string &command, int fd);
+	static void sendNoTextToSendMessage(Server &server, int fd);
+	static void sendChannelMessage(Server &server, int fd, const string &target, Template &channelMessageT, User *user);
 };
 
 #endif
