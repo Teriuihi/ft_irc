@@ -10,7 +10,7 @@ string UserCommand::getName() const {
 //const string RPL_MYINFO = ":irc.example.com 001 <nick> <servername> <version> <available user modes> <available channel modes>";
 void UserCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (!user->isAuthed())
+	if (user == NULL || !user->isAuthed())
 		return;
 	std::vector<std::string> commandParts = splitString(command, " ");
 	if (commandParts.size() != 4) {

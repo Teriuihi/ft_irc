@@ -18,8 +18,13 @@ public:
 	const sockaddr_in &getServAddr() const { return serv_addr; }
 	pollfd *getPollFd() { return pollFd; }
 	void removeUser(int fd) { activeUsers.remove(fd); }
-	void addUser(int fd, User *user) { activeUsers.insert(fd, (void *)user); }
-	User* getUser(int fd) { return (User *) activeUsers.getNode(fd)->getValue(); }
+	void addUser(int fd, User *user) { activeUsers.insert(fd, user); }
+	User* getUser(int fd) {
+		Node<User> *node = activeUsers.getNode(fd);
+		if (node == NULL)
+			return NULL;
+		return node->getValue();
+	}
 
 	std::string getPassword() { return password; }
 	void forwardMessage(char *message);
@@ -33,7 +38,7 @@ private:
 	struct sockaddr_in serv_addr;
 	struct pollfd pollFd[MAX_EVENTS];
 	vector<Channel*> channels;
-	BSTree activeUsers;
+	BSTree<User> activeUsers;
 	void *commandHandler;
 	void executeCommand(vector<string> commands, int fd);
 };

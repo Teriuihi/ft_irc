@@ -1,20 +1,22 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 #include <cstdlib>
+
+template<typename T>
 class Node {
 public:
-	Node(int key, void* value) : key(key), value(value), left(NULL), right(NULL) {}
+	Node(int key, T* value) : key(key), value(value), left(NULL), right(NULL) {}
 	int getKey() const { return key; }
 	void setKey(int newKey) { key = newKey; }
-	void* getValue() const { return value; }
-	void setValue(void* newValue) { this->value = newValue; }
+	T* getValue() const { return value; }
+	void setValue(T* newValue) { this->value = newValue; }
 	Node* getLeft() const { return left; }
 	Node* getRight() const { return right; }
 	void setLeft(Node* node) { left = node; }
 	void setRight(Node* node) { right = node; }
 private:
 	int key;
-	void* value;
+	T* value;
 	Node* left;
 	Node* right;
 };

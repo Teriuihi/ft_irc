@@ -3,6 +3,7 @@
 #include "Node.hpp"
 #include <iostream>
 
+template <typename T>
 class BSTree {
 public:
 	BSTree() : root(NULL) {}
@@ -10,27 +11,28 @@ public:
 		deleteTree(root);
 	}
 
-	void insert(int key, void *value) { this->root = insertHelper(this->root, key, value); }
+	void insert(int key, T* value) { this->root = insertHelper(this->root, key, value); }
 	bool remove(int key) { return removeHelper(this->root, key); }
-	Node* getNode(int key) const { return getNodeHelper(this->root, key); }
+	Node<T>* getNode(int key) const { return getNodeHelper(this->root, key); }
 	bool contains(int key) const { return getNodeHelper(this->root, key) != NULL; }
 private:
-	Node* root;
+	Node<T>* root;
 
-	Node* insertHelper(Node* node, int key, void* value) {
+	Node<T>* insertHelper(Node<T>* node, int key, T* value) {
 		if (node == NULL) {
-			node = new Node(key, value);
+			node = new Node<T>(key, value);
 		} else if (key < node->getKey()) {
 			node->setLeft(insertHelper(node->getLeft(), key, value));
 		} else if (key > node->getKey()) {
 			node->setRight(insertHelper(node->getRight(), key, value));
 		} else {
+			delete node->getValue();
 			node->setValue(value);
 		}
 		return node;
 	}
 
-	bool removeHelper(Node* node, int key) {
+	bool removeHelper(Node<T>* node, int key) {
 		if (node == NULL)
 			return false;
 		if (key < node->getKey())
@@ -42,15 +44,20 @@ private:
 			delete node;
 			node = NULL;
 		} else if (node->getLeft() == NULL) {
-			Node* temp = node;
+			Node<T>* temp = node;
 			node = node->getRight();
 			delete temp;
 		} else if (node->getRight() == NULL) {
-			Node* temp = node;
+			Node<T>* temp = node;
 			node = node->getLeft();
 			delete temp;
 		} else {
-			Node* minNode = findMin(node->getRight());
+			Node<T>* minNode = findMin(node->getRight());
+			if (minNode == NULL) {
+				cout << "HELP NULL NODE"<< endl;
+				//TODO REMOVE THIS
+				return false;
+			}
 			node->setKey(minNode->getKey());
 			node->setValue(minNode->getValue());
 			removeHelper(node->getRight(), minNode->getKey());
@@ -58,14 +65,14 @@ private:
 		return true;
 	}
 
-	Node* findMin(Node* node) {
+	Node<T>* findMin(Node<T>* node) {
 		while (node->getLeft() != NULL) {
 			node = node->getLeft();
 		}
 		return node;
 	}
 
-	Node* getNodeHelper(Node* node, int key) const {
+	Node<T>* getNodeHelper(Node<T>* node, int key) const {
 		if (node == NULL)
 			return NULL;
 		if (key < node->getKey())
@@ -75,7 +82,7 @@ private:
 		return node;
 	}
 
-	void deleteTree(Node* node) {
+	void deleteTree(Node<T>* node) {
 		if (node == NULL)
 			return;
 		deleteTree(node->getLeft());

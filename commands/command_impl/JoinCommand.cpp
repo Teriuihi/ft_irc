@@ -14,7 +14,7 @@ void JoinCommand::execute(Server &server, string &command, int fd) {
 		return;
 	}
 	User *user = server.getUser(fd);
-	if (user == NULL) {
+	if (user == NULL || !user->isAuthed()) {
 		//TODO ERROR
 		return;
 	}

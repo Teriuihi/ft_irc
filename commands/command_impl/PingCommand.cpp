@@ -5,7 +5,8 @@ string PingCommand::getName() const {
 }
 
 void PingCommand::execute(Server &server, string &command, int fd) {
-	if (server.getUser(fd) == NULL)
+	User *user = server.getUser(fd);
+	if (user == NULL || !user->isAuthed())
 		return;
 	string response = "PONG " + command;
 	send(fd, response.c_str(), response.length(), 0);
