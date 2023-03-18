@@ -79,6 +79,7 @@ void runServerLoop(Server &server) {
 			if (valRead == 0) {
 				// client disconnected
 				cout << "Client disconnected: " << inet_ntoa(cli_addr.sin_addr) << ":" << ntohs(cli_addr.sin_port) << endl;
+				//TODO if user is still in channel notify members of them disconnecting
 
 				server.removeUser(pollFd[i].fd);
 
