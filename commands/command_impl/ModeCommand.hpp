@@ -7,7 +7,9 @@ public:
 	virtual string getName() const;
 	virtual void execute(Server &server, string &command, int fd);
 private:
-	static void respondModeChannel(Server &server, string &channelName, int fd);
+	static void respondModeChannel(Server &server, string &channelName, int fd, User *user);
+
+	static void setOp(Server &server, string &channelName, User *actor, string &affectedNick, bool state);
 };
 
 #endif
