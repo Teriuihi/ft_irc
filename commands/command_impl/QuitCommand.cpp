@@ -22,7 +22,8 @@ void QuitCommand::execute(Server &server, string &command, int fd) {
 	std::string reply = plt.getString();
 	for (vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++) {
 		(*it)->removeUser(fd);
-		(*it)->sendMessage(user, reply);
+		(*it)->broadcastMessage(reply);
 	}
 	server.removeUser(fd);
+	//TODO figure out how to free up the connection entirely
 }
