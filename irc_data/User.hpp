@@ -4,7 +4,7 @@
 #include <string>
 using namespace std;
 
-class User {
+class User { //TODO have a check for if someone has everything they need to have set set before they can do other stuff
 private:
 	int fd;
 	string nick;
