@@ -8,7 +8,7 @@ string JoinCommand::getName() const {
 void JoinCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL) {
-		//TODO ERROR
+		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
 	Channel *channel = server.getChannel(command);

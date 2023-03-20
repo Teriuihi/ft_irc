@@ -43,3 +43,11 @@ const string &User::getServername() const {
 void User::setServername(const string &servername) {
 	User::servername = servername;
 }
+
+bool User::isServerOp() const {
+	return serverOp;
+}
+
+void User::setServerOp(bool serverOp) {
+	User::serverOp = serverOp;
+}

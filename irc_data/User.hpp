@@ -12,6 +12,7 @@ private:
 	string realName;
 	string hostname;
 	string servername;
+	bool serverOp;
 public:
 	void setNick(string &nick);
 	const string &getUsername() const;
@@ -27,6 +28,10 @@ public:
 	const string &getServername() const;
 
 	void setServername(const string &servername);
+
+	bool isServerOp() const;
+
+	void setServerOp(bool serverOp);
 
 	User(int fd) : fd(fd) {}
 	int getFd() const;

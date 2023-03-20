@@ -12,13 +12,22 @@ string ModeCommand::getName() const {
 void ModeCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL) {
-		//TODO ERROR
+		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
 
 	std::vector<std::string> commandParts = splitString(command, " ");
-	if (commandParts.size() == 1) {
-		respondModeChannel(server, command, fd, user);
+	if (commandParts.size() < 2) {
+		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
+		replyT.addPlaceholders(Placeholder("command", command));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
+		return;
+	}
+	if (commandParts.size() == 2) {
+		respondModeChannel(server, commandParts[0], commandParts[1], fd);
 		return;
 	}
 	if (commandParts.size() != 3) {
@@ -35,27 +44,43 @@ void ModeCommand::execute(Server &server, string &command, int fd) {
 	} else if (commandParts[1] == "-o") {
 		setOp(server, commandParts[0], user, commandParts[2], false);
 	}
-	//TODO implement setting modes
 }
 
-void ModeCommand::respondModeChannel(Server &server, string &channelName, int fd, User *user) {
+void ModeCommand::respondModeChannel(Server &server, string &channelName, string &userName, int fd, User *actor) {
 	Channel* channel = server.getChannel(channelName);
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
-		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
 		replyT.addPlaceholders(Placeholder("channel", channelName));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 
+	User *user = server.getUser(userName);
+	if (user == NULL) {
+		Template replyT = Template(ErrorMessages::ERR_NOSUCHNICK);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", channelName));
+		std::string reply = replyT.getString();
+		send(actor->getFd(), reply.c_str(), reply.length(), 0);
+	} else if (user != actor) {
+		Template replyT = Template(ErrorMessages::ERR_USERSDONTMATCH);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", channelName));
+		std::string reply = replyT.getString();
+		send(actor->getFd(), reply.c_str(), reply.length(), 0);
+	}
+
 	Template modeT = Template(ReplyMessages::RPL_CHANNELMODEIS);
 	modeT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 	modeT.addPlaceholders(Placeholder("channel", channel->getName()));
-	modeT.addPlaceholders(Placeholder("nick", "")); // Not affecting a specific user
-	if (channel->isOp(user))
-		modeT.addPlaceholders(Placeholder("mode", "+no")); // Have to be in the channel to send messages to it, user is OP
+	modeT.addPlaceholders(Placeholder("nick", "")); // Not affecting a specific actor
+	if (channel->isOp(actor))
+		modeT.addPlaceholders(Placeholder("mode", "+no")); // Have to be in the channel to send messages to it, actor is OP
 	else
 		modeT.addPlaceholders(Placeholder("mode", "+n")); // Have to be in the channel to send messages to it
 
@@ -74,16 +99,31 @@ void ModeCommand::setOp(Server &server, string &channelName, User *actor, string
 		send(actor->getFd(), reply.c_str(), reply.length(), 0);
 		return;
 	}
-	if (actor->getUsername() != "Teriuihi") {
-		//TODO permission error (only i can make ppl OP)
-		//Yes this is not secure, its not meant to be, its just an example of how the OP command could work
-		//	if this were to be for real id make it so you'd need an extra password to login as Teriuihi or
-		//	make a custom command for getting OP with a specific command
+	if (!actor->isServerOp() && !channel->isOp(actor)) {
+		Template replyT = Template(ErrorMessages::ERR_CHANOPRIVSNEEDED);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", channelName));
+		std::string reply = replyT.getString();
+		send(actor->getFd(), reply.c_str(), reply.length(), 0);
 		return;
 	}
 	User *user = server.getUser(affectedNick);
-	if (user == NULL)
-		return; //TODO error
+	if (user == NULL) {
+		Template replyT = Template(ErrorMessages::ERR_NOSUCHNICK);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", channelName));
+		std::string reply = replyT.getString();
+		send(actor->getFd(), reply.c_str(), reply.length(), 0);
+	} else if (user != actor) {
+		Template replyT = Template(ErrorMessages::ERR_USERSDONTMATCH);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", channelName));
+		std::string reply = replyT.getString();
+		send(actor->getFd(), reply.c_str(), reply.length(), 0);
+	}
 	Template channelModeT = Template(ReplyMessages::RPL_CHANNELMODEIS);
 	channelModeT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 	channelModeT.addPlaceholders(Placeholder("channel", channel->getName()));

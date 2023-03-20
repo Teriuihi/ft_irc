@@ -11,6 +11,7 @@
 #include "command_impl/QuitCommand.hpp"
 #include "command_impl/ListCommand.hpp"
 #include "command_impl/KickCommand.hpp"
+#include "command_impl/OperCommand.hpp"
 
 CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("PASS", new PasswordCommand()));
@@ -25,6 +26,7 @@ CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("QUIT", new QuitCommand()));
 	this->commands.insert(std::make_pair("LIST", new ListCommand()));
 	this->commands.insert(std::make_pair("KICK", new KickCommand()));
+	this->commands.insert(std::make_pair("OPER", new OperCommand()));
 	//TODO add OPER command
 	//3.1.4 Oper message
 	//

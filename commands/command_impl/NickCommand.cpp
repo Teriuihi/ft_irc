@@ -19,12 +19,16 @@ bool isValidNick(std::string &nick) {
 
 void NickCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL)
-		return; //TODO error?
+	if (user == NULL) {
+		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
+		return;
+	}
 	if (server.getUser(command) != NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NICKNAMEINUSE);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 		replyT.addPlaceholders(Placeholder("nick", command));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 	}
 	if (command.empty()) {
 		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
@@ -42,4 +46,6 @@ void NickCommand::execute(Server &server, string &command, int fd) {
 	Template replyT = Template(ErrorMessages::ERR_ERRONEUSNICKNAME);
 	replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 	replyT.addPlaceholders(Placeholder("nick", command));
+	std::string reply = replyT.getString();
+	send(fd, reply.c_str(), reply.length(), 0);
 }

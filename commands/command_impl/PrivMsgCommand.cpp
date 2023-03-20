@@ -56,8 +56,10 @@ void PrivMsgCommand::sendUserMessage(Server &server, string const &target, Templ
 
 void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL)
+	if (user == NULL) {
+		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
+	}
 	vector<string> commandParts = splitString(command, " ");
 	if (commandParts.empty() || *command.begin() == ':') {
 		sendNoRecipientMessage(server, user, command, fd);

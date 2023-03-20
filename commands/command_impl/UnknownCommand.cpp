@@ -7,7 +7,7 @@ string UnknownCommand::getName() const {
 void UnknownCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL) {
-		//TODO error?
+		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
 	Template err = Template(ErrorMessages::ERR_UNKNOWN_COMMAND);

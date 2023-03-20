@@ -19,6 +19,7 @@ void PasswordCommand::execute(Server &server, string &command, int fd) {
 	else {
 		Template replyT = Template(ErrorMessages::ERR_PASSWDMISMATCH);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", ""));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
 	}
