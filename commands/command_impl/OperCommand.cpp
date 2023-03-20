@@ -7,7 +7,7 @@ string OperCommand::getName() const {
 
 void OperCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL) {
+	if (user == NULL || !user->isRegisterFinished()) {
 		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
@@ -25,11 +25,13 @@ void OperCommand::execute(Server &server, string &command, int fd) {
 
 	User *affected = server.getUser(commandParts[0]);
 	if (affected == NULL) {
-		Template replyT = Template(ErrorMessages::ERR_NICKNAMEINUSE);
+		Template replyT = Template(ErrorMessages::ERR_NOSUCHNICK);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", ""));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
+		return;
 	}
 
 	if (commandParts[1] != OPER_PASS) {
@@ -38,6 +40,7 @@ void OperCommand::execute(Server &server, string &command, int fd) {
 		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
+		return;
 	}
 
 	affected->setServerOp(true);

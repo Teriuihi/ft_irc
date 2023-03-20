@@ -34,7 +34,12 @@ void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &ta
 		return;
 	}
 	if (channel->getUser(fd) == NULL) {
-		//TODO error not in channel ?
+		Template replyT = Template(ErrorMessages::ERR_CANNOTSENDTOCHAN);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", target));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	channelMessageT.addPlaceholders(Placeholder("channel", channel->getName()));
@@ -42,11 +47,15 @@ void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &ta
 	channel->sendMessage(user, modifiedMsg);
 }
 
-void PrivMsgCommand::sendUserMessage(Server &server, string const &target, Template &channelMessageT) {
+void PrivMsgCommand::sendUserMessage(Server &server, User *actor, string const &target, Template &channelMessageT) {
 	User *recipient = server.getUser(target);
 	if (recipient == NULL) {
-		cout << "No user with that name found" << endl;
-		//TODO send err msg
+		Template replyT = Template(ErrorMessages::ERR_NOSUCHNICK);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", target));
+		std::string reply = replyT.getString();
+		send(actor->getFd(), reply.c_str(), reply.length(), 0);
 		return;
 	}
 	channelMessageT.addPlaceholders(Placeholder("channel", recipient->getNick()));
@@ -56,7 +65,7 @@ void PrivMsgCommand::sendUserMessage(Server &server, string const &target, Templ
 
 void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL) {
+	if (user == NULL || !user->isRegisterFinished()) {
 		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
@@ -93,7 +102,7 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 		if (*it->begin() == '#') {
 			sendChannelMessage(server, fd, *it, messageT, user);
 		} else {
-			sendUserMessage(server, *it, messageT);
+			sendUserMessage(server,user, *it, messageT);
 			//We ignore $ and #ip because it's not required by the subject
 		}
 	}

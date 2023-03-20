@@ -4,7 +4,7 @@
 #include <string>
 using namespace std;
 
-class User { //TODO have a check for if someone has everything they need to have set set before they can do other stuff
+class User {
 private:
 	int fd;
 	string nick;
@@ -13,6 +13,7 @@ private:
 	string hostname;
 	string servername;
 	bool serverOp;
+	bool registerFinished;
 public:
 	void setNick(string &nick);
 	const string &getUsername() const;
@@ -31,9 +32,13 @@ public:
 
 	bool isServerOp() const;
 
-	void setServerOp(bool serverOp);
+	void setServerOp(bool newServerOp);
 
-	User(int fd) : fd(fd) {}
+	bool isRegisterFinished() const;
+
+	void setRegisterFinished(bool registerFinished);
+
+	User(int fd) : fd(fd), serverOp(false), registerFinished(false) {}
 	int getFd() const;
 };
 

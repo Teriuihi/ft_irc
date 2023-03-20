@@ -15,3 +15,18 @@ std::vector<std::string> splitString(const std::string& str, const std::string &
 	}
 	return result;
 }
+
+std::string joinString(std::vector<std::string> &split, const std::string &separator, int skip) {
+	std::string result;
+	for (std::vector<std::string>::iterator it = split.begin(); it != split.end(); ++it) {
+		if (skip != 0) {
+			skip--;
+			continue;
+		}
+		if (it != split.begin() + 1) {
+			result += separator;
+		}
+		result += *it;
+	}
+	return result;
+}

@@ -5,11 +5,13 @@
 namespace ErrorMessages {
 	const std::string ERR_NOSUCHNICK = ":<server_hostname> 401 <nick> <channel> :No such nick\n";
 	const std::string ERR_NOSUCHCHANNEL = ":<server_hostname> 403 <nick> <channel> :No such channel\n";
+	const std::string ERR_CANNOTSENDTOCHAN  = ":<server_hostname> 404 <nick> <channel> :Cannot send to channel\n";
 	const std::string ERR_NORECIPIENT = ":<server_hostname> 411 <nick> :No recipient given (<command>)\n";
 	const std::string ERR_NOTEXTTOSEND = ":<server_hostname> 412 <nick> :No text to send\n";
 	const std::string ERR_ERRONEUSNICKNAME = ":<server_hostname> 432 <nick> :Erroneous nickname\n";
 	const std::string ERR_NICKNAMEINUSE = ":<server_hostname> 433 <nick> :Nickname is already in use\n";
 	const std::string ERR_UNKNOWN_COMMAND = ":<server_hostname> 421 <nick> <command> :Unknown command\n";
+	const std::string ERR_USERNOTINCHANNEL = ":<server_hostname> 441 <nick> <user> <channel> :They aren't on that channel\n";
 	const std::string ERR_NOTREGISTERED  = ":<server_hostname> 451 * :You have not registered\n";
 	const std::string ERR_ALREADYREGISTERED  = ":<server_hostname> 462 <nick> :You may not reregister\n";
 	const std::string ERR_PASSWDMISMATCH = ":<server_hostname> 464 <nick> :Password incorrect\n";

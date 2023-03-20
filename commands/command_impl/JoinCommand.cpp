@@ -3,11 +3,10 @@
 string JoinCommand::getName() const {
 	return "JOIN";
 }
-//TODO handle joining multiple channels in one command
-//TODO sometimes joining doesn't notify the other client properly?
+
 void JoinCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL) {
+	if (user == NULL || !user->isRegisterFinished()) {
 		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
@@ -41,10 +40,14 @@ void JoinCommand::execute(Server &server, string &command, int fd) {
 	send(fd, joinR.c_str(), joinR.length(), 0);
 
 	Template topicT = Template(ReplyMessages::RPL_TOPIC);
+	if (channel->getTopic().empty()) {
+		topicT = Template(ReplyMessages::RPL_NOTOPIC);
+	} else {
+		topicT.addPlaceholders(topicP);
+	}
 	topicT.addPlaceholders(serverHostP);
 	topicT.addPlaceholders(nickP);
 	topicT.addPlaceholders(channelP);
-	topicT.addPlaceholders(topicP);
 	string topicReply = topicT.getString();
 	send(fd, topicReply.c_str(), topicReply.length(), 0);
 

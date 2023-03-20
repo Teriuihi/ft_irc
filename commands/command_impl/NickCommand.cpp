@@ -29,6 +29,7 @@ void NickCommand::execute(Server &server, string &command, int fd) {
 		replyT.addPlaceholders(Placeholder("nick", command));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
+		return;
 	}
 	if (command.empty()) {
 		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);

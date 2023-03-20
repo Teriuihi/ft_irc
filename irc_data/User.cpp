@@ -41,13 +41,21 @@ const string &User::getServername() const {
 }
 
 void User::setServername(const string &servername) {
-	User::servername = servername;
+	this->servername = servername;
 }
 
 bool User::isServerOp() const {
 	return serverOp;
 }
 
-void User::setServerOp(bool serverOp) {
-	User::serverOp = serverOp;
+void User::setServerOp(bool newServerOp) {
+	this->serverOp = newServerOp;
+}
+
+bool User::isRegisterFinished() const {
+	return registerFinished;
+}
+
+void User::setRegisterFinished(bool newRegisterFinished) {
+	User::registerFinished = newRegisterFinished;
 }

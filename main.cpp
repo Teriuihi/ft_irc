@@ -64,7 +64,7 @@ void runServerLoop(Server &server) {
 		// check for incoming connections on the server socket
 		struct sockaddr_in cli_addr = {};
 		int addrlen = sizeof(server.getServAddr());
-		char buffer[1024] = {0}; //Message limit should be 512 bytes gotta figure out some way to enforce that
+		char buffer[1024] = {0};
 		char message[1029] = {0};
 		if (server.getPollFd()[0].revents & POLLIN) {
 			checkActivity(server, cli_addr, clientSockets, addrlen);

@@ -1,20 +1,19 @@
-#include "KickCommand.hpp"
+#include "TopicCommand.hpp"
 std::vector<std::string> splitString(const std::string& str, const std::string &split);
 std::string joinString(std::vector<std::string> &split, const std::string &separator, int skip);
 
-string KickCommand::getName() const {
-	return "KICK";
+string TopicCommand::getName() const {
+	return "TOPIC";
 }
 
-void KickCommand::execute(Server &server, string &command, int fd) {
+void TopicCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL || !user->isRegisterFinished()) {
 		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
-
 	std::vector<std::string> commandParts = splitString(command, " ");
-	if (commandParts.size() < 2) {
+	if (commandParts.empty()) {
 		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
@@ -23,13 +22,27 @@ void KickCommand::execute(Server &server, string &command, int fd) {
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
-
-	Channel *channel = server.getChannel(commandParts[0]);
+	Channel* channel = server.getChannel(commandParts[0]);
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		replyT.addPlaceholders(Placeholder("channel", commandParts[0]));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
+		return;
+	}
+
+	if (commandParts.size() == 1) {
+		Template replyT = Template(ReplyMessages::RPL_TOPIC);
+		if (channel->getTopic().empty()) {
+			replyT = Template(ReplyMessages::RPL_NOTOPIC);
+		} else {
+			replyT.addPlaceholders(Placeholder("topic", channel->getTopic()));
+		}
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
+		replyT.addPlaceholders(Placeholder("channel", channel->getName()));
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
@@ -45,29 +58,13 @@ void KickCommand::execute(Server &server, string &command, int fd) {
 		return;
 	}
 
-	User *kick = server.getUser(commandParts[1]);
-	if (kick == NULL) {
-		Template replyT = Template(ErrorMessages::ERR_USERNOTINCHANNEL);
-		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
-		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
-		replyT.addPlaceholders(Placeholder("user", commandParts[1]));
-		replyT.addPlaceholders(Placeholder("channel", channel->getName()));
-		std::string reply = replyT.getString();
-		send(user->getFd(), reply.c_str(), reply.length(), 0);
-		return;
-	}
-
-	std::string reason;
-	if (commandParts.size() > 2) {
-		reason = joinString(commandParts, " ", 2);
-	} else {
-		reason = "Kicked by operator.";
-	}
-	Template replyT = Template(ReplyMessages::KICKMSG);
+	string topic = joinString(commandParts, " ", 1);
+	topic = topic.substr(1, topic.length());
+	channel->setTopic(topic);
+	Template replyT = Template(ReplyMessages::RPL_TOPIC);
+	replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 	replyT.addPlaceholders(Placeholder("nick", user->getNick()));
-	replyT.addPlaceholders(Placeholder("affected", kick->getNick()));
 	replyT.addPlaceholders(Placeholder("channel", channel->getName()));
-	replyT.addPlaceholders(Placeholder("reason", reason));
+	replyT.addPlaceholders(Placeholder("topic", channel->getTopic()));
 	channel->broadcastMessage(replyT.getString());
-	channel->removeUser(kick->getFd());
 }

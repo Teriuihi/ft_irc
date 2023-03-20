@@ -11,7 +11,7 @@ private:
 	static void sendNoTextToSendMessage(Server &server, User *user, int fd);
 	static void sendChannelMessage(Server &server, int fd, const string &target, Template &channelMessageT, User *user);
 
-	static void sendUserMessage(Server &server, const string &target, Template &channelMessageT);
+	static void sendUserMessage(Server &server, User *actor, string const &target, Template &channelMessageT);
 };
 
 #endif

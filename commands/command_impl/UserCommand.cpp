@@ -16,7 +16,7 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
 		return;
 	}
-	if (!user->getUsername().empty()) {
+	if (user->isRegisterFinished()) {
 		Template replyT = Template(ErrorMessages::ERR_ALREADYREGISTERED );
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
@@ -24,7 +24,6 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
-	//TODO duplicate username check
 	std::vector<std::string> commandParts = splitString(command, " ");
 	if (commandParts.size() < 4) {
 		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
@@ -40,10 +39,11 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 	user->setServername(commandParts[2]);
 	size_t pos = command.find(commandParts[3]);
 	if (pos != std::string::npos) {
-		user->setRealName(command.substr(pos));
+		user->setRealName(command.substr(pos + 1));
 	} else {
 		user->setRealName(commandParts[3]);
 	}
+	user->setRegisterFinished(true);
 
 	Placeholder serverHostP = Placeholder("server_hostname", server.getHostname());
 	Placeholder nickP = Placeholder("nick", user->getNick());
