@@ -6,9 +6,8 @@ string PartCommand::getName() const {
 }
 
 void PartCommand::execute(Server &server, string &command, int fd) {
-	string notconst = ":<nick>!<username>@<hostname> PART <channel> <reason>\n";
 	User *user = server.getUser(fd);
-	if (user == NULL || !user->isAuthed()) {
+	if (user == NULL) {
 		//TODO ERROR
 		return;
 	}
@@ -20,7 +19,7 @@ void PartCommand::execute(Server &server, string &command, int fd) {
 	Channel* channel = server.getChannel(commandParts[0]);
 	if (channel == NULL)
 		return; //TODO error?
-	Template plt = Template(notconst);
+	Template plt = Template(ReplyMessages::PARTMSG);
 	plt.addPlaceholders(Placeholder("nick", user->getNick()));
 	plt.addPlaceholders(Placeholder("username", user->getUsername()));
 	plt.addPlaceholders(Placeholder("hostname", user->getHostname()));

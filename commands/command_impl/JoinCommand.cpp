@@ -7,7 +7,7 @@ string JoinCommand::getName() const {
 //TODO sometimes joining doesn't notify the other client properly?
 void JoinCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL || !user->isAuthed()) {
+	if (user == NULL) {
 		//TODO ERROR
 		return;
 	}

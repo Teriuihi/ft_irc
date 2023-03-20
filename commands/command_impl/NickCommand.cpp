@@ -6,7 +6,7 @@ string NickCommand::getName() const {
 
 void NickCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL || !user->isAuthed())
+	if (user == NULL)
 		return; //TODO error?
 	if (command.empty())
 		return; //TODO error?

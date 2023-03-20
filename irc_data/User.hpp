@@ -12,7 +12,6 @@ private:
 	string realName;
 	string hostname;
 	string servername;
-	bool authed;
 public:
 	void setNick(string &nick);
 	const string &getUsername() const;
@@ -29,9 +28,8 @@ public:
 
 	void setServername(const string &servername);
 
-	User(int fd, bool authed) : fd(fd), authed(authed) {}
+	User(int fd) : fd(fd) {}
 	int getFd() const;
-	bool isAuthed() const;
 };
 
 
