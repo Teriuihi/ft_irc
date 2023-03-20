@@ -22,7 +22,11 @@ void ModeCommand::execute(Server &server, string &command, int fd) {
 		return;
 	}
 	if (commandParts.size() != 3) {
-		//TODO error? (our mode command only handles /MODE channel +/-o nick)
+		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("command", command));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	if (commandParts[1] == "+o") {
@@ -36,7 +40,11 @@ void ModeCommand::execute(Server &server, string &command, int fd) {
 void ModeCommand::respondModeChannel(Server &server, string &channelName, int fd, User *user) {
 	Channel* channel = server.getChannel(channelName);
 	if (channel == NULL) {
-		//TODO error
+		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("channel", channelName));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 
@@ -55,8 +63,14 @@ void ModeCommand::respondModeChannel(Server &server, string &channelName, int fd
 
 void ModeCommand::setOp(Server &server, string &channelName, User *actor, string &affectedNick, bool state) {
 	Channel *channel = server.getChannel(channelName);
-	if (channel == NULL)
-		return; //TODO error
+	if (channel == NULL) {
+		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("channel", channelName));
+		std::string reply = replyT.getString();
+		send(actor->getFd(), reply.c_str(), reply.length(), 0);
+		return;
+	}
 	if (actor->getUsername() != "Teriuihi") {
 		//TODO permission error (only i can make ppl OP)
 		//Yes this is not secure, its not meant to be, its just an example of how the OP command could work
@@ -74,6 +88,7 @@ void ModeCommand::setOp(Server &server, string &channelName, User *actor, string
 	if (state) {
 		channelModeT.addPlaceholders(Placeholder("mode", "+no")); //Channel is in n mode and user got OP
 		channel->addOp(user);
+		//TODO notify user with RPL_YOUREOPER
 	} else {
 		channelModeT.addPlaceholders(Placeholder("mode", "-o")); //User loses OP
 		channel->removeOp(user);

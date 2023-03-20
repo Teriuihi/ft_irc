@@ -23,8 +23,11 @@ void PrivMsgCommand::sendNoTextToSendMessage(Server &server, int fd) {
 void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &target, Template &channelMessageT, User *user) {
 	Channel *channel = server.getChannel(target);
 	if (channel == NULL) {
-		cout << "No channel with that name found" << endl;
-		//TODO send err msg
+		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("channel", target));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	if (channel->getUser(fd) == NULL) {

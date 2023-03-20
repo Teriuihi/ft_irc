@@ -10,6 +10,7 @@
 #include "command_impl/PartCommand.hpp"
 #include "command_impl/QuitCommand.hpp"
 #include "command_impl/ListCommand.hpp"
+#include "command_impl/KickCommand.hpp"
 
 CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("PASS", new PasswordCommand()));
@@ -23,6 +24,29 @@ CommandHandler::CommandHandler() {
 	this->commands.insert(std::make_pair("PART", new PartCommand()));
 	this->commands.insert(std::make_pair("QUIT", new QuitCommand()));
 	this->commands.insert(std::make_pair("LIST", new ListCommand()));
+	this->commands.insert(std::make_pair("KICK", new KickCommand()));
+	//TODO add OPER command
+	//3.1.4 Oper message
+	//
+	//      Command: OPER
+	//   Parameters: <name> <password>
+	//
+	//   A normal user uses the OPER command to obtain operator privileges.
+	//   The combination of <name> and <password> are REQUIRED to gain
+	//   Operator privileges.  Upon success, the user will receive a MODE
+	//   message (see section 3.1.5) indicating the new user modes.
+	//
+	//   Numeric Replies:
+	//
+	//           ERR_NEEDMOREPARAMS              RPL_YOUREOPER
+	//           ERR_NOOPERHOST                  ERR_PASSWDMISMATCH
+	//
+	//   Example:
+	//
+	//   OPER foo bar                    ; Attempt to register as an operator
+	//                                   using a username of "foo" and "bar"
+	//                                   as the password.
+	//TODO add TOPIC as an OP command
 }
 
 void CommandHandler::execute(string &name, Server &server, string &command, int fd) {

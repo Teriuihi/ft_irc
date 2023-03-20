@@ -16,7 +16,11 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 		return;
 	std::vector<std::string> commandParts = splitString(command, " ");
 	if (commandParts.size() < 4) {
-		std::cout << "Unexpected command length" << std::endl;
+		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("command", command));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	user->setUsername(commandParts[0]);

@@ -14,6 +14,7 @@ void ListCommand::execute(Server &server, string &command, int fd) {\
 	vector<Channel*> channels = server.getChannels();
 	Template listT = Template(ReplyMessages::RPL_LIST);
 	listT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+	listT.addPlaceholders(Placeholder("nick", user->getNick()));
 
 	for (vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++) {
 		listT.addPlaceholders(Placeholder("channel", (*it)->getName()));
@@ -25,6 +26,7 @@ void ListCommand::execute(Server &server, string &command, int fd) {\
 
 	Template listEndT = Template(ReplyMessages::RPL_LISTEND);
 	listEndT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+	listEndT.addPlaceholders(Placeholder("nick", user->getNick()));
 	string listEndM = listEndT.getString();
 	send(fd, listEndM.c_str(), listEndM.size(), 0);
 	command.size(); //This param is unused but that's not allowed by the subject but it needs to be

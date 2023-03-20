@@ -41,6 +41,7 @@ void JoinCommand::execute(Server &server, string &command, int fd) {
 
 	Template topicT = Template(ReplyMessages::RPL_TOPIC);
 	topicT.addPlaceholders(serverHostP);
+	topicT.addPlaceholders(nickP);
 	topicT.addPlaceholders(channelP);
 	topicT.addPlaceholders(topicP);
 	string topicReply = topicT.getString();
@@ -48,6 +49,7 @@ void JoinCommand::execute(Server &server, string &command, int fd) {
 
 	Template nameT = Template(ReplyMessages::RPL_NAMREPLY);
 	nameT.addPlaceholders(serverHostP);
+	nameT.addPlaceholders(nickP);
 	nameT.addPlaceholders(channelP);
 	nameT.addPlaceholders(userListP);
 	string userListReply = nameT.getString();
@@ -55,6 +57,7 @@ void JoinCommand::execute(Server &server, string &command, int fd) {
 
 	Template nameEndT = Template(ReplyMessages::RPL_ENDOFNAMES);
 	nameEndT.addPlaceholders(serverHostP);
+	nameEndT.addPlaceholders(nickP);
 	nameEndT.addPlaceholders(channelP);
 	string userListEndReply = nameEndT.getString();
 	send(fd, userListEndReply.c_str(), userListEndReply.length(), 0);
