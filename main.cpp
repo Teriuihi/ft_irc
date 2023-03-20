@@ -96,18 +96,18 @@ void runServerLoop(Server &server) {
 
 int main(int argc, char *argv[]) {
 	if (argc != 3) {
-		cout << "Correct usage " << argv[0] << " <port> <password>" << endl;
+		cout << "Correct usage: " << argv[0] << " <port> <password>" << endl;
 		return 0;
 	}
 	char *endptr;
 	long int port = ::strtol(argv[1], &endptr, 10);
-	if (*endptr != 0 || port < 0 || port > 65535) { //TODO check port limits
-		cout << "Invalid port: " << argv[1] << "\nPlease ensure the port you give is between 0 and 65535" << endl;
+	if (*endptr != 0 || port < 1024 || port > 49151) { //port limits the User Ports, also known as the Registered Ports, from 1024-49151 (assigned by IANA) source: http://www.rfc-editor.org/info/rfc6335
+		cout << "Invalid port: " << argv[1] << "\nPlease ensure the port you give is between 1024 and 49151" << endl;
 		return 1;
 	}
 
 	size_t passLen = strlen(argv[2]);
-	if (passLen < 3 || passLen > 64) { //TODO check what min/max pass len should be
+	if (passLen < 3 || passLen > 64) {
 		cout << "Please keep your password between 3 and 64 characters" << endl;
 		return 1;
 	}
