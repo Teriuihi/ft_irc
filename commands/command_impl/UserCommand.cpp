@@ -14,10 +14,17 @@ void UserCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL)
 		return;
+	if (!user->getUsername().empty()) {
+		Template replyT = Template(ErrorMessages::ERR_ALREADYREGISTERED );
+		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
+		return;
+	}
 	std::vector<std::string> commandParts = splitString(command, " ");
 	if (commandParts.size() < 4) {
 		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		replyT.addPlaceholders(Placeholder("command", command));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);

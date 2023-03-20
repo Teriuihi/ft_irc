@@ -24,6 +24,7 @@ void ModeCommand::execute(Server &server, string &command, int fd) {
 	if (commandParts.size() != 3) {
 		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		replyT.addPlaceholders(Placeholder("command", command));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
@@ -42,6 +43,7 @@ void ModeCommand::respondModeChannel(Server &server, string &channelName, int fd
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		replyT.addPlaceholders(Placeholder("channel", channelName));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
@@ -66,6 +68,7 @@ void ModeCommand::setOp(Server &server, string &channelName, User *actor, string
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", actor->getNick()));
 		replyT.addPlaceholders(Placeholder("channel", channelName));
 		std::string reply = replyT.getString();
 		send(actor->getFd(), reply.c_str(), reply.length(), 0);

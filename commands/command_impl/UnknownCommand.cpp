@@ -5,8 +5,14 @@ string UnknownCommand::getName() const {
 }
 
 void UnknownCommand::execute(Server &server, string &command, int fd) {
+	User *user = server.getUser(fd);
+	if (user == NULL) {
+		//TODO error?
+		return;
+	}
 	Template err = Template(ErrorMessages::ERR_UNKNOWN_COMMAND);
 	err.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+	err.addPlaceholders(Placeholder("nick", user->getNick()));
 	err.addPlaceholders( Placeholder("command", command));
 
 	string reply = err.getString();

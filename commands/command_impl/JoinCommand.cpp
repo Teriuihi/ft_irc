@@ -15,6 +15,7 @@ void JoinCommand::execute(Server &server, string &command, int fd) {
 	if (channel == NULL) {
 		Template plt = Template(ErrorMessages::ERR_BADCHANNELKEY);
 		plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		plt.addPlaceholders(Placeholder("nick", user->getNick()));
 		plt.addPlaceholders(Placeholder("channel", command));
 		string reply = plt.getString();
 		send(fd, reply.c_str(), reply.length(), 0);

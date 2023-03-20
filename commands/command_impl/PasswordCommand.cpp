@@ -9,6 +9,7 @@ void PasswordCommand::execute(Server &server, string &command, int fd) {
 	if (user != NULL) {
 		Template replyT = Template(ErrorMessages::ERR_ALREADYREGISTRED);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;

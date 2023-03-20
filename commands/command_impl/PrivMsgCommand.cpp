@@ -5,17 +5,19 @@ string PrivMsgCommand::getName() const {
 	return "PRIVMSG";
 }
 
-void PrivMsgCommand::sendNoRecipientMessage(Server &server, string &command, int fd) {
+void PrivMsgCommand::sendNoRecipientMessage(Server &server, User *user, string &command, int fd) {
 	Template plt = Template(ErrorMessages::ERR_NORECIPIENT);
 	plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+	plt.addPlaceholders(Placeholder("nick", user->getNick()));
 	plt.addPlaceholders(Placeholder("command", command));
 	string reply = plt.getString();
 	send(fd, reply.c_str(), reply.length(), 0);
 }
 
-void PrivMsgCommand::sendNoTextToSendMessage(Server &server, int fd) {
+void PrivMsgCommand::sendNoTextToSendMessage(Server &server, User *user, int fd) {
 	Template plt = Template(ErrorMessages::ERR_NOTEXTTOSEND);
 	plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+	plt.addPlaceholders(Placeholder("nick", user->getNick()));
 	string reply = plt.getString();
 	send(fd, reply.c_str(), reply.length(), 0);
 }
@@ -25,6 +27,7 @@ void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &ta
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		replyT.addPlaceholders(Placeholder("channel", target));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
@@ -57,16 +60,16 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 		return;
 	vector<string> commandParts = splitString(command, " ");
 	if (commandParts.empty() || *command.begin() == ':') {
-		sendNoRecipientMessage(server, command, fd);
+		sendNoRecipientMessage(server, user, command, fd);
 		return;
 	} else if (commandParts.size() == 1) {
-		sendNoTextToSendMessage(server, fd);
+		sendNoTextToSendMessage(server, user, fd);
 		return;
 	}
 	string target = commandParts[0];
 	size_t pos = command.find(" :");
 	if (pos == string::npos || command.length() < pos + 2) {
-		sendNoTextToSendMessage(server, fd);
+		sendNoTextToSendMessage(server, user, fd);
 		return;
 	}
 	pos += 2;

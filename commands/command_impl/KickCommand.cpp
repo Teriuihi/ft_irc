@@ -16,6 +16,7 @@ void KickCommand::execute(Server &server, string &command, int fd) {
 	if (commandParts.size() < 2) {
 		Template replyT = Template(ErrorMessages::ERR_NEEDMOREPARAMS);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		replyT.addPlaceholders(Placeholder("command", command));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
@@ -26,6 +27,7 @@ void KickCommand::execute(Server &server, string &command, int fd) {
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		replyT.addPlaceholders(Placeholder("channel", commandParts[0]));
 		std::string reply = replyT.getString();
 		send(fd, reply.c_str(), reply.length(), 0);
