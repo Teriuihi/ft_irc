@@ -115,7 +115,6 @@ int main(int argc, char *argv[]) {
 	try {
 		Server server = Server((int) port, string(argv[2]));
 		runServerLoop(server);
-		server.closeServer();
 	} catch (exception &e) {
 		cout << e.what() << endl;
 		return 1;

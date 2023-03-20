@@ -39,13 +39,15 @@ public:
 	std::string getPassword() { return password; }
 	void forwardMessage(char *message);
 	void receivedMessage(char *message, int fd);
-	void closeServer() const;
+	void closeServer();
 	Channel* getChannel(const string& name);
 	vector<Channel *> getAllChannelsForUser(int fd);
 	const string &getName() const;
 	const string &getHostname() const;
 	void disconnect(int fd, const string& reason);
 	int *getClientSockets();
+
+	virtual ~Server();
 
 private:
 	int sockFd;

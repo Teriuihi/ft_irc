@@ -54,10 +54,10 @@ Server::Server(int port, const std::string &password) : serv_addr(), pollFd(), c
 	channels.push_back(new Channel("#off-topic", "Talk about anything you want."));
 }
 
-void Server::closeServer() const { //TODO do this in de-constructor?
+void Server::closeServer() {
 	for (int i = 1; i <= MAX_CLIENTS; i++) {
 		if (pollFd[i].fd != -1) {
-			close(pollFd[i].fd);
+			this->disconnect(pollFd[i].fd, "Server shutting down");
 		}
 	}
 
@@ -198,4 +198,8 @@ void Server::disconnect(int fd, std::string const &reason) {
 
 int *Server::getClientSockets() {
 	return clientSockets;
+}
+
+Server::~Server() {
+	this->closeServer();
 }
