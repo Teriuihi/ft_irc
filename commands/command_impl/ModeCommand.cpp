@@ -27,7 +27,7 @@ void ModeCommand::execute(Server &server, string &command, int fd) {
 		return;
 	}
 	if (commandParts.size() == 2) {
-		respondModeChannel(server, commandParts[0], commandParts[1], fd);
+		respondModeChannel(server, commandParts[0], commandParts[1], fd, user);
 		return;
 	}
 	if (commandParts.size() != 3) {
