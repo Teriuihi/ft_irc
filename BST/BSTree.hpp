@@ -86,7 +86,7 @@ private:
 		} else if (node->getRight() == NULL) {
 			setNodeHelper(parent, node, node->getLeft());
 			delete node;
-		} else { //TODO figure out how this works
+		} else {
 			Node<T>* minNode = findMin(node->getRight());
 			node->setKey(minNode->getKey());
 			node->setValue(minNode->getValue());
