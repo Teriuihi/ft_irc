@@ -12,7 +12,7 @@ string UserCommand::getName() const {
 //received message is username hostname servername :real name
 void UserCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
-	if (user == NULL || !user->isAuthed())
+	if (user == NULL)
 		return;
 	std::vector<std::string> commandParts = splitString(command, " ");
 	if (commandParts.size() < 4) {
