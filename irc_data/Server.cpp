@@ -4,10 +4,11 @@
 #include <arpa/inet.h>
 #include "../helper_files/badFixHeader.hpp"
 
-Server::Server(int port, const std::string &password) : serv_addr(), pollFd() {
+Server::Server(int port, const std::string &password) : serv_addr(), pollFd(), clientSockets() {
 	this->password = password;
 	this->commandHandler = new CommandHandler();
 	this->name = "ft_irc";
+	bzero(this->clientSockets, sizeof(int) * MAX_CLIENTS);
 	char tmpHostname[256];
 	if (gethostname(tmpHostname, sizeof(tmpHostname)) == 0) {
 		this->hostname = tmpHostname;
@@ -119,18 +120,29 @@ void Server::executeCommand(std::vector<std::string> commands, int fd) {
 std::vector<std::string> splitString(const std::string& str, const std::string &split);
 
 void Server::receivedMessage(char *message, int fd) {
+	std::string text = incompleteText[fd];
 	string msg(message);
-	if (*--msg.end() != '\n') {
-		cout << "Received incomplete message" << endl;
-	}
-	msg = msg.substr(0, msg.length() - 1);
+
 	size_t pos = msg.find(']');
 	if (pos != std::string::npos && pos + 2 >= msg.length()) {
 		cout << "Received message seems too short, message was: {" << msg << "}" << endl;
 		return;
 	}
+
 	pos += 2;
 	string fullCommand = msg.substr(pos, msg.length());
+	if (!text.empty()) {
+		fullCommand = text + fullCommand;
+		incompleteText[fd] = "";
+	}
+
+	if (*--fullCommand.end() != '\n') {
+		cout << "Received incomplete message" << endl;
+		incompleteText[fd].append(fullCommand);
+		return;
+	}
+
+	fullCommand = fullCommand.substr(0, fullCommand.length() - 1);
 	cout << fullCommand << endl;
 	std::vector<std::string> commands = splitString(fullCommand, "\n");
 	executeCommand(commands, fd);
@@ -146,4 +158,44 @@ const string &Server::getName() const {
 
 const vector<Channel *> &Server::getChannels() const {
 	return channels;
+}
+
+void Server::disconnect(int fd, std::string const &reason) {
+	User *user = getUser(fd);
+	if (user == NULL) {
+		shutdown(fd, SHUT_RDWR);
+		for (int i = 0; i < MAX_CLIENTS; i++) {
+			if (pollFd[i].fd != fd)
+				continue;
+			pollFd[i].fd = -1;
+			close(clientSockets[i]);
+			clientSockets[i] = 0;
+		}
+		return;
+	}
+	vector<Channel *> dcChannels = getAllChannelsForUser(fd);
+	Template plt = Template(ReplyMessages::PARTMSG);
+	plt.addPlaceholders(Placeholder("nick", user->getNick()));
+	plt.addPlaceholders(Placeholder("username", user->getUsername()));
+	plt.addPlaceholders(Placeholder("hostname", user->getHostname()));
+	plt.addPlaceholders(Placeholder("reason", reason));
+	std::string reply = plt.getString();
+	for (vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++) {
+		(*it)->removeUser(fd);
+		(*it)->broadcastMessage(reply);
+	}
+	incompleteText[fd] = "";
+	removeUser(fd);
+	shutdown(fd, SHUT_RDWR);
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		if (pollFd[i].fd != fd)
+			continue;
+		pollFd[i].fd = -1;
+		close(clientSockets[i]);
+		clientSockets[i] = 0;
+	}
+}
+
+int *Server::getClientSockets() {
+	return clientSockets;
 }

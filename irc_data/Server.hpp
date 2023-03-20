@@ -17,7 +17,6 @@ public:
 	int getSockFd() const { return sockFd; }
 	const sockaddr_in &getServAddr() const { return serv_addr; }
 	pollfd *getPollFd() { return pollFd; }
-	void removeUser(int fd) { activeUsers.remove(fd); }
 	void addUser(int fd, User *user) { activeUsers.insert(fd, user); }
 	User* getUser(int fd) {
 		Node<User> *node = activeUsers.getNode(fd);
@@ -45,6 +44,8 @@ public:
 	vector<Channel *> getAllChannelsForUser(int fd);
 	const string &getName() const;
 	const string &getHostname() const;
+	void disconnect(int fd, const string& reason);
+	int *getClientSockets();
 
 private:
 	int sockFd;
@@ -53,10 +54,13 @@ private:
 	struct pollfd pollFd[MAX_EVENTS];
 	vector<Channel*> channels;
 	BSTree<User> activeUsers;
-	void *commandHandler;
-	void executeCommand(vector<string> commands, int fd);
+	map<int, std::string> incompleteText;
 	std::string hostname;
 	std::string name;
+	int clientSockets[MAX_CLIENTS];
+	void *commandHandler;
+	void executeCommand(vector<string> commands, int fd);
+	void removeUser(int fd) { activeUsers.remove(fd); }
 };
 
 

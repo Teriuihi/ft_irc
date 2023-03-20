@@ -51,6 +51,8 @@ void checkActivity(Server &server, sockaddr_in cli_addr, int clientsock[10], int
 }
 
 void runServerLoop(Server &server) {
+	int *clientSockets = server.getClientSockets();
+	bzero(clientSockets, sizeof(int) * MAX_CLIENTS);
 	while (true) {
 		// wait for activity on any of the file descriptors
 		int ready = poll(server.getPollFd(), MAX_EVENTS, -1);
@@ -62,7 +64,6 @@ void runServerLoop(Server &server) {
 		// check for incoming connections on the server socket
 		struct sockaddr_in cli_addr = {};
 		int addrlen = sizeof(server.getServAddr());
-		int clientSockets[MAX_CLIENTS];
 		char buffer[1024] = {0}; //Message limit should be 512 bytes gotta figure out some way to enforce that
 		char message[1029] = {0};
 		if (server.getPollFd()[0].revents & POLLIN) {
@@ -78,22 +79,12 @@ void runServerLoop(Server &server) {
 			ssize_t valRead = read(pollFd[i].fd, buffer, sizeof(buffer));
 			if (valRead == 0) {
 				// client disconnected
+				server.disconnect(pollFd[i].fd, "Disconnect");
 				cout << "Client disconnected: " << inet_ntoa(cli_addr.sin_addr) << ":" << ntohs(cli_addr.sin_port) << endl;
-				//TODO if user is still in channel notify members of them disconnecting
-
-				server.removeUser(pollFd[i].fd);
-
-				// remove the client socket from the file descriptor set
-				pollFd[i].fd = -1;
-
-				// closeServer the client socket
-				close(clientSockets[i - 1]);
-
-				// clear the client socket from the list of connected clients
-				clientSockets[i - 1] = 0;
 			}
 			else {
 				// add client address to message and forward to all other clients
+				bzero(message, sizeof(char) * 1029);
 				memset(&message, 0, sizeof(message));
 				sprintf(message, "[%s:%d] %s", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), buffer);
 

@@ -15,5 +15,7 @@ namespace ReplyMessages {
 	const std::string RPL_ENDOFNAMES = ":<server_hostname> 366 <channel> :End of NAMES list\n";
 	const std::string JOIN = ":<nick>!<username>@<hostname> JOIN <channel>\n";
 	const std::string PRIVMSG =  ":<nick>!<user>@<host> PRIVMSG <channel> :<message>\n";
+	const std::string QUITMSG =  ":<nick>!<username>@<hostname> QUIT <reason>\n";
+	const std::string PARTMSG =  ":<nick>!<username>@<hostname> PART <channel> <reason>\n";
 }
 #endif
