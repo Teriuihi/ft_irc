@@ -21,7 +21,6 @@ void checkActivity(Server &server, sockaddr_in cli_addr, int clientsock[10], int
 				break;
 			}
 			else {
-				// error accepting connection
 				cout << "Error accepting connection" << endl;
 				break;
 			}
@@ -29,7 +28,6 @@ void checkActivity(Server &server, sockaddr_in cli_addr, int clientsock[10], int
 		else {
 			cout << "New client connected: " << inet_ntoa(cli_addr.sin_addr) << ":" << ntohs(cli_addr.sin_port) << endl;
 
-			// add the new client socket to the file descriptor set
 			int i;
 			struct pollfd *pollFd = server.getPollFd();
 			for (i = 1; i <= MAX_CLIENTS; i++) {
@@ -41,7 +39,6 @@ void checkActivity(Server &server, sockaddr_in cli_addr, int clientsock[10], int
 				}
 			}
 
-			// check if maximum number of clients has been reached
 			if (i > MAX_CLIENTS) {
 				cout << "Maximum number of clients reached" << endl;
 				close(newsock);
@@ -54,14 +51,12 @@ void runServerLoop(Server &server) {
 	int *clientSockets = server.getClientSockets();
 	bzero(clientSockets, sizeof(int) * MAX_CLIENTS);
 	while (true) {
-		// wait for activity on any of the file descriptors
 		int ready = poll(server.getPollFd(), MAX_EVENTS, -1);
 		if (ready == -1 && errno != EINTR) {
 			cout << "Error polling file descriptors" << endl;
 			break;
 		}
 
-		// check for incoming connections on the server socket
 		struct sockaddr_in cli_addr = {};
 		int addrlen = sizeof(server.getServAddr());
 		char buffer[1024] = {0};
@@ -70,7 +65,6 @@ void runServerLoop(Server &server) {
 			checkActivity(server, cli_addr, clientSockets, addrlen);
 		}
 
-		// check for incoming data from clients
 		struct pollfd *pollFd = server.getPollFd();
 		for (int i = 1; i <= MAX_CLIENTS; i++) {
 			if (pollFd[i].fd == -1 || !(pollFd[i].revents & POLLIN))
@@ -78,12 +72,10 @@ void runServerLoop(Server &server) {
 
 			ssize_t valRead = read(pollFd[i].fd, buffer, sizeof(buffer));
 			if (valRead == 0) {
-				// client disconnected
 				server.disconnect(pollFd[i].fd, "Disconnect");
 				cout << "Client disconnected: " << inet_ntoa(cli_addr.sin_addr) << ":" << ntohs(cli_addr.sin_port) << endl;
 			}
 			else {
-				// add client address to message and forward to all other clients
 				bzero(message, sizeof(char) * 1029);
 				memset(&message, 0, sizeof(message));
 				sprintf(message, "[%s:%d] %s", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), buffer);

@@ -4,12 +4,7 @@ std::vector<std::string> splitString(const std::string& str, const std::string &
 string UserCommand::getName() const {
 	return "USER";
 }
-//const std::string RPL_WELCOME = ":<server_hostname> 001 <nick> :Welcome to the Internet Relay Network <nick>!<user>@<host>\n";
-//const std::string RPL_YOURHOST = ":<server_hostname> 002 <nick> :Your host is <servername>, running version <ver>\n";
-//const std::string RPL_CREATED = ":<server_hostname> 003 <nick> :This server was created 16/03/2023\n";
-//const std::string RPL_MYINFO = ":<server_hostname> 004 <nick> :<servername> <version> <available user modes> <available channel modes>\n";
 
-//received message is username hostname servername :real name
 void UserCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL) {
