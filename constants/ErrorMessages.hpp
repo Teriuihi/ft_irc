@@ -12,6 +12,7 @@ namespace ErrorMessages {
 	const std::string ERR_NICKNAMEINUSE = ":<server_hostname> 433 <nick> :Nickname is already in use\n";
 	const std::string ERR_UNKNOWN_COMMAND = ":<server_hostname> 421 <nick> <command> :Unknown command\n";
 	const std::string ERR_USERNOTINCHANNEL = ":<server_hostname> 441 <nick> <user> <channel> :They aren't on that channel\n";
+	const std::string ERR_NOTONCHANNEL = ":<server_hostname> 442 <channel> :You're not on that channel\n";
 	const std::string ERR_NOTREGISTERED  = ":<server_hostname> 451 * :You have not registered\n";
 	const std::string ERR_ALREADYREGISTERED  = ":<server_hostname> 462 <nick> :You may not reregister\n";
 	const std::string ERR_PASSWDMISMATCH = ":<server_hostname> 464 <nick> :Password incorrect\n";

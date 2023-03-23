@@ -40,7 +40,17 @@ void NickCommand::execute(Server &server, string &command, int fd) {
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
+	if (*command.begin() == ':') {
+		command = command.substr(1, command.length());
+	}
 	if (isValidNick(command)) {
+		if (!user->getNick().empty()) {
+			Template replyT = Template(ReplyMessages::NEWNICK);
+			replyT.addPlaceholders(Placeholder("old_nick", user->getNick()));
+			replyT.addPlaceholders(Placeholder("new_nick", command));
+			std::string reply = replyT.getString();
+			send(fd, reply.c_str(), reply.length(), 0);
+		}
 		user->setNick(command);
 		return;
 	}

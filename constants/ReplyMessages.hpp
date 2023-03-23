@@ -18,7 +18,8 @@ namespace ReplyMessages {
 	const std::string JOIN = ":<nick> JOIN <channel>\n";
 	const std::string PRIVMSG =  ":<nick> PRIVMSG <channel> :<message>\n";
 	const std::string QUITMSG =  ":<nick> QUIT :<reason>\n";
-	const std::string PARTMSG =  ":<nick> PART :<channel> :<reason>\n";
+	const std::string PARTMSG =  ":<nick> PART <channel> :<reason>\n";
 	const std::string KICKMSG =  ":<nick> KICK <channel> <affected> <reason>\n";
+	const std::string NEWNICK =  ":<old_nick> NICK :<new_nick>\n";
 }
 #endif

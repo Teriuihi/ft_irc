@@ -32,13 +32,19 @@ void PartCommand::execute(Server &server, string &command, int fd) {
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
-	Template plt = Template(ReplyMessages::PARTMSG);
-	plt.addPlaceholders(Placeholder("nick", user->getNick()));
-	plt.addPlaceholders(Placeholder("username", user->getUsername()));
-	plt.addPlaceholders(Placeholder("hostname", user->getHostname()));
-	plt.addPlaceholders(Placeholder("channel", channel->getName()));
-	plt.addPlaceholders(Placeholder("reason", joinString(commandParts, " ", 1)));
-	std::string reply = plt.getString();
+	if (channel->getUser(user->getFd()) == NULL) {
+		Template replyT = Template(ErrorMessages::ERR_NOTONCHANNEL);
+		replyT.addPlaceholders(Placeholder("hostname", user->getHostname()));
+		replyT.addPlaceholders(Placeholder("channel", channel->getName()));
+		std::string reply = replyT.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
+		return;
+	}
+	Template replyT = Template(ReplyMessages::PARTMSG);
+	replyT.addPlaceholders(Placeholder("nick", user->getNick()));
+	replyT.addPlaceholders(Placeholder("channel", channel->getName()));
+	replyT.addPlaceholders(Placeholder("reason", joinString(commandParts, " ", 1)));
+	std::string reply = replyT.getString();
 	channel->removeUser(fd);
 	channel->sendMessage(user, reply);
 }
