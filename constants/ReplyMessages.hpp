@@ -12,9 +12,9 @@ namespace ReplyMessages {
 	const std::string RPL_CHANNELMODEIS =  ":<server_hostname> 324 <nick> <channel> <mode>\n";
 	const std::string RPL_NOTOPIC = ":<server_hostname> 331 <nick> <channel> :No topic is set\n";
 	const std::string RPL_TOPIC = ":<server_hostname> 332 <nick> <channel> :<topic>\n";
-	const std::string RPL_NAMREPLY = ":<server_hostname> 353 <nick> <channel> :<user_list>\n";
+	const std::string RPL_NAMREPLY = ":<server_hostname> 353 <channel> :<user_list>\n";
 	const std::string RPL_ENDOFNAMES = ":<server_hostname> 366 <nick> <channel> :End of NAMES list\n";
-	const std::string RPL_YOUREOPER  = ":<server_hostname> 381 <nick> :You are now an IRC operator\n";
+	const std::string RPL_YOUREOPER  = ":<server_hostname> 381 :You are now an IRC operator\n";
 	const std::string JOIN = ":<nick> JOIN <channel>\n";
 	const std::string PRIVMSG =  ":<nick> PRIVMSG <channel> :<message>\n";
 	const std::string QUITMSG =  ":<nick> QUIT :<reason>\n";

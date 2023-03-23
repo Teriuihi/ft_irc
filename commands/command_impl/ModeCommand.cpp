@@ -115,6 +115,7 @@ void ModeCommand::setOp(Server &server, string &channelName, User *actor, string
 		replyT.addPlaceholders(Placeholder("channel", channelName));
 		std::string reply = replyT.getString();
 		send(actor->getFd(), reply.c_str(), reply.length(), 0);
+		return;
 	} else if (user != actor) {
 		Template replyT = Template(ErrorMessages::ERR_USERSDONTMATCH);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
@@ -122,6 +123,7 @@ void ModeCommand::setOp(Server &server, string &channelName, User *actor, string
 		replyT.addPlaceholders(Placeholder("channel", channelName));
 		std::string reply = replyT.getString();
 		send(actor->getFd(), reply.c_str(), reply.length(), 0);
+		return;
 	}
 	Template channelModeT = Template(ReplyMessages::RPL_CHANNELMODEIS);
 	channelModeT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));

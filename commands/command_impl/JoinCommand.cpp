@@ -53,7 +53,7 @@ void JoinCommand::execute(Server &server, string &command, int fd) {
 
 	Template nameT = Template(ReplyMessages::RPL_NAMREPLY);
 	nameT.addPlaceholders(serverHostP);
-	nameT.addPlaceholders(nickP);
+//	nameT.addPlaceholders(nickP);
 	nameT.addPlaceholders(channelP);
 	nameT.addPlaceholders(userListP);
 	string userListReply = nameT.getString();
