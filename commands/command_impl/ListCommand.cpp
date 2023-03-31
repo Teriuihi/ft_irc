@@ -4,19 +4,22 @@ string ListCommand::getName() const {
 	return "LIST";
 }
 
-void ListCommand::execute(Server &server, string &command, int fd) {\
+void ListCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL || !user->isRegisterFinished()) {
-		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
+		Template plt = Template(ErrorMessages::ERR_NOTREGISTERED);
+		plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		string reply = plt.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 
-	vector<Channel*> channels = server.getChannels();
+	vector<Channel *> channels = server.getChannels();
 	Template listT = Template(ReplyMessages::RPL_LIST);
 	listT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 	listT.addPlaceholders(Placeholder("nick", user->getNick()));
 
-	for (vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++) {
+	for (vector<Channel *>::const_iterator it = channels.begin(); it != channels.end(); it++) {
 		listT.addPlaceholders(Placeholder("channel", (*it)->getName()));
 		listT.addPlaceholders(Placeholder("users", (*it)->getUserCount()));
 		listT.addPlaceholders(Placeholder("topic", (*it)->getTopic()));

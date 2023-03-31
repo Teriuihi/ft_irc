@@ -1,5 +1,6 @@
 #include "UserCommand.hpp"
-std::vector<std::string> splitString(const std::string& str, const std::string &split);
+
+std::vector<std::string> splitString(const std::string &str, const std::string &split);
 
 string UserCommand::getName() const {
 	return "USER";
@@ -8,11 +9,14 @@ string UserCommand::getName() const {
 void UserCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL) {
-		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
+		Template plt = Template(ErrorMessages::ERR_NOTREGISTERED);
+		plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		string reply = plt.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	if (user->isRegisterFinished()) {
-		Template replyT = Template(ErrorMessages::ERR_ALREADYREGISTERED );
+		Template replyT = Template(ErrorMessages::ERR_ALREADYREGISTERED);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
 		replyT.addPlaceholders(Placeholder("nick", user->getNick()));
 		std::string reply = replyT.getString();

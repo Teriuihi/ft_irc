@@ -1,5 +1,7 @@
 #include "PartCommand.hpp"
-std::vector<std::string> splitString(const std::string& str, const std::string &split);
+
+std::vector<std::string> splitString(const std::string &str, const std::string &split);
+
 std::string joinString(std::vector<std::string> &split, const std::string &separator, int skip);
 
 string PartCommand::getName() const {
@@ -9,7 +11,10 @@ string PartCommand::getName() const {
 void PartCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL || !user->isRegisterFinished()) {
-		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
+		Template plt = Template(ErrorMessages::ERR_NOTREGISTERED);
+		plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		string reply = plt.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	std::vector<std::string> commandParts = splitString(command, " ");
@@ -22,7 +27,7 @@ void PartCommand::execute(Server &server, string &command, int fd) {
 		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
-	Channel* channel = server.getChannel(commandParts[0]);
+	Channel *channel = server.getChannel(commandParts[0]);
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
 		replyT.addPlaceholders(Placeholder("server_hostname", server.getHostname()));

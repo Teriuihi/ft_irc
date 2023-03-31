@@ -22,7 +22,7 @@ Server::Server(int port, const std::string &password) : serv_addr(), pollFd(), c
 	}
 
 	int opt = 1;
-	if (setsockopt(sockFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0) {
+	if (setsockopt(sockFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
 		throw runtime_error("Error setting socket options");
 	}
 

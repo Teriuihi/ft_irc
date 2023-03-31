@@ -1,5 +1,6 @@
 #include "PrivMsgCommand.hpp"
-std::vector<std::string> splitString(const std::string& str, const std::string &split);
+
+std::vector<std::string> splitString(const std::string &str, const std::string &split);
 
 string PrivMsgCommand::getName() const {
 	return "PRIVMSG";
@@ -22,7 +23,8 @@ void PrivMsgCommand::sendNoTextToSendMessage(Server &server, User *user, int fd)
 	send(fd, reply.c_str(), reply.length(), 0);
 }
 
-void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &target, Template &channelMessageT, User *user) {
+void PrivMsgCommand::sendChannelMessage(Server &server, int fd, string const &target, Template &channelMessageT,
+										User *user) {
 	Channel *channel = server.getChannel(target);
 	if (channel == NULL) {
 		Template replyT = Template(ErrorMessages::ERR_NOSUCHCHANNEL);
@@ -66,7 +68,10 @@ void PrivMsgCommand::sendUserMessage(Server &server, User *actor, string const &
 void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 	User *user = server.getUser(fd);
 	if (user == NULL || !user->isRegisterFinished()) {
-		send(fd, ErrorMessages::ERR_NOTREGISTERED.c_str(), ErrorMessages::ERR_NOTREGISTERED.length(), 0);
+		Template plt = Template(ErrorMessages::ERR_NOTREGISTERED);
+		plt.addPlaceholders(Placeholder("server_hostname", server.getHostname()));
+		string reply = plt.getString();
+		send(fd, reply.c_str(), reply.length(), 0);
 		return;
 	}
 	vector<string> commandParts = splitString(command, " ");
@@ -102,7 +107,7 @@ void PrivMsgCommand::execute(Server &server, string &command, int fd) {
 		if (*it->begin() == '#') {
 			sendChannelMessage(server, fd, *it, messageT, user);
 		} else {
-			sendUserMessage(server,user, *it, messageT);
+			sendUserMessage(server, user, *it, messageT);
 			//We ignore $ and #ip because it's not required by the subject
 		}
 	}
